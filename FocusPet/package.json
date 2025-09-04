@@ -1,0 +1,70 @@
+{
+  "name": "focuspet-chrome-extension",
+  "version": "1.0.0",
+  "description": "Stay productive with your cute virtual pet that grows as you focus!",
+  "main": "background.js",
+  "scripts": {
+    "build": "echo 'No build process needed - ready to load as unpacked extension'",
+    "test": "echo 'Testing: Load extension in Chrome and test functionality'",
+    "lint": "echo 'Linting: Check code quality and Chrome extension standards'"
+  },
+  "keywords": [
+    "productivity",
+    "focus",
+    "chrome-extension",
+    "gamification",
+    "virtual-pet",
+    "pomodoro",
+    "distraction-blocker"
+  ],
+  "author": "FocusPet Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/focuspet"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/focuspet/issues"
+  },
+  "homepage": "https://github.com/yourusername/focuspet#readme",
+  "chrome_extension": {
+    "manifest_version": 3,
+    "minimum_chrome_version": "88",
+    "permissions": [
+      "storage",
+      "notifications", 
+      "activeTab",
+      "tabs",
+      "alarms"
+    ],
+    "features": [
+      "Custom focus timer (1-60 minutes)",
+      "Interactive virtual pet with evolution",
+      "Speech bubbles and personality",
+      "Distraction detection and warnings",
+      "XP system and achievements",
+      "Random rewards and accessories",
+      "Professional break suggestions",
+      "Daily streak tracking",
+      "Social sharing features"
+    ]
+  },
+  "development": {
+    "setup": [
+      "1. Clone or download the repository",
+      "2. Open Chrome and go to chrome://extensions/",
+      "3. Enable Developer mode",
+      "4. Click 'Load unpacked' and select the FocusPet folder",
+      "5. Start using the extension!"
+    ],
+    "files": {
+      "manifest.json": "Extension configuration and permissions",
+      "popup.html": "Main UI popup interface",
+      "popup.css": "Styling for the popup interface",
+      "popup.js": "Pet system logic and UI controller",
+      "background.js": "Timer, notifications, and distraction detection",
+      "content.js": "Content script for distraction warnings",
+      "icons/": "Extension icons in various sizes"
+    }
+  }
+}

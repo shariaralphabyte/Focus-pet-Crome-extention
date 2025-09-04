@@ -1,0 +1,43 @@
+<svg width="128" height="128" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="petGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background circle -->
+  <circle cx="64" cy="64" r="60" fill="url(#petGradient)" stroke="#fff" stroke-width="4"/>
+  
+  <!-- Pet face (cat) -->
+  <circle cx="64" cy="58" r="35" fill="#ff6b6b"/>
+  
+  <!-- Cat ears -->
+  <polygon points="40,35 50,20 60,35" fill="#ff6b6b"/>
+  <polygon points="68,35 78,20 88,35" fill="#ff6b6b"/>
+  <polygon points="44,32 48,25 56,32" fill="#ff8e8e"/>
+  <polygon points="72,32 76,25 84,32" fill="#ff8e8e"/>
+  
+  <!-- Eyes -->
+  <circle cx="54" cy="52" r="6" fill="#333"/>
+  <circle cx="74" cy="52" r="6" fill="#333"/>
+  <circle cx="56" cy="50" r="2" fill="#fff"/>
+  <circle cx="76" cy="50" r="2" fill="#fff"/>
+  
+  <!-- Nose -->
+  <polygon points="64,60 60,66 68,66" fill="#333"/>
+  
+  <!-- Mouth -->
+  <path d="M 64 68 Q 58 72 52 68" stroke="#333" stroke-width="2" fill="none"/>
+  <path d="M 64 68 Q 70 72 76 68" stroke="#333" stroke-width="2" fill="none"/>
+  
+  <!-- Whiskers -->
+  <line x1="35" y1="58" x2="45" y2="56" stroke="#333" stroke-width="2"/>
+  <line x1="35" y1="64" x2="45" y2="64" stroke="#333" stroke-width="2"/>
+  <line x1="83" y1="56" x2="93" y2="58" stroke="#333" stroke-width="2"/>
+  <line x1="83" y1="64" x2="93" y2="64" stroke="#333" stroke-width="2"/>
+  
+  <!-- Focus indicator -->
+  <circle cx="100" cy="28" r="12" fill="#4ecdc4"/>
+  <text x="100" y="33" text-anchor="middle" fill="white" font-size="16" font-weight="bold">🎯</text>
+</svg>

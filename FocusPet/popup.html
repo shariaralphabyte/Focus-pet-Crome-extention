@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FocusPet</title>
+    <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🐾 FocusPet</h1>
+            <div class="streak">
+                <span class="streak-icon">🔥</span>
+                <span id="streak-count">0</span>
+            </div>
+        </div>
+
+        <!-- Pet Display -->
+        <div class="pet-container">
+            <div class="pet-stage" id="pet-stage">
+                <!-- Speech Bubble -->
+                <div class="speech-bubble" id="speech-bubble">
+                    <div class="speech-text" id="speech-text">Ready to focus together? 🐾</div>
+                </div>
+                
+                <div class="pet-sprite" id="pet-sprite">
+                    <div class="pet-emoji" id="pet-emoji">🐱</div>
+                    <div class="pet-mood" id="pet-mood">😊</div>
+                    <div class="pet-accessories" id="pet-accessories"></div>
+                </div>
+                <div class="pet-name" id="pet-name">Whiskers</div>
+                
+                <!-- Timer Progress Ring -->
+                <div class="timer-progress-ring" id="timer-progress-ring">
+                    <svg class="progress-ring" width="120" height="120">
+                        <circle class="progress-ring-circle" cx="60" cy="60" r="54" 
+                                stroke="#e2e8f0" stroke-width="4" fill="transparent"/>
+                        <circle class="progress-ring-progress" cx="60" cy="60" r="54" 
+                                stroke="#4ecdc4" stroke-width="4" fill="transparent"
+                                stroke-dasharray="339.292" stroke-dashoffset="339.292"/>
+                    </svg>
+                </div>
+            </div>
+            
+            <!-- Pet Stats -->
+            <div class="stats-container">
+                <div class="stat-bar">
+                    <div class="stat-label">❤️ Happiness</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill happiness" id="happiness-bar"></div>
+                    </div>
+                    <span class="stat-value" id="happiness-value">100%</span>
+                </div>
+                
+                <div class="stat-bar">
+                    <div class="stat-label">🍖 Hunger</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill hunger" id="hunger-bar"></div>
+                    </div>
+                    <span class="stat-value" id="hunger-value">80%</span>
+                </div>
+                
+                <div class="stat-bar">
+                    <div class="stat-label">⭐ XP</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill xp" id="xp-bar"></div>
+                    </div>
+                    <span class="stat-value" id="xp-value">Level 1</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Focus Timer -->
+        <div class="timer-section">
+            <div class="timer-display">
+                <div class="timer-circle">
+                    <div class="timer-text" id="timer-text">25:00</div>
+                </div>
+            </div>
+            
+            <div class="timer-controls">
+                <button class="btn btn-primary" id="start-timer">🎯 Start Focus</button>
+                <button class="btn btn-secondary" id="pause-timer" style="display: none;">⏸️ Pause</button>
+                <button class="btn btn-tertiary" id="reset-timer">🔄 Reset</button>
+            </div>
+            
+            <div class="timer-settings">
+                <label for="focus-duration">Focus Time:</label>
+                <div class="custom-timer-input">
+                    <input type="number" id="custom-minutes" min="1" max="60" value="25" />
+                    <span>minutes</span>
+                </div>
+                <div class="quick-select">
+                    <button class="quick-btn" data-minutes="1">1m</button>
+                    <button class="quick-btn" data-minutes="5">5m</button>
+                    <button class="quick-btn" data-minutes="15">15m</button>
+                    <button class="quick-btn" data-minutes="25">25m</button>
+                    <button class="quick-btn" data-minutes="45">45m</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pet Actions -->
+        <div class="actions-section">
+            <button class="action-btn" id="feed-pet">
+                <span class="action-icon">🍖</span>
+                <span class="action-text">Feed</span>
+            </button>
+            <button class="action-btn" id="play-pet">
+                <span class="action-icon">🎾</span>
+                <span class="action-text">Play</span>
+            </button>
+            <button class="action-btn" id="pet-pet">
+                <span class="action-icon">👋</span>
+                <span class="action-text">Pet</span>
+            </button>
+        </div>
+
+        <!-- Achievements & Rewards -->
+        <div class="achievements-section">
+            <h3>🏆 Recent Achievements</h3>
+            <div class="achievement-list" id="achievement-list">
+                <div class="achievement">
+                    <span class="achievement-icon">🌟</span>
+                    <span class="achievement-text">Welcome to FocusPet!</span>
+                </div>
+            </div>
+            
+            <!-- Random Reward Display -->
+            <div class="reward-popup" id="reward-popup" style="display: none;">
+                <div class="reward-content">
+                    <div class="reward-icon" id="reward-icon">🎁</div>
+                    <div class="reward-text" id="reward-text">Surprise reward!</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Share Section -->
+        <div class="share-section">
+            <button class="btn btn-share" id="share-progress">
+                📸 Share My Pet
+            </button>
+        </div>
+    </div>
+
+    <script src="popup.js"></script>
+</body>
+</html>

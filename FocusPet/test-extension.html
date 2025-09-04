@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FocusPet Extension Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: white;
+        }
+        .test-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 20px;
+            margin: 20px 0;
+            color: #333;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+        .status {
+            padding: 8px 16px;
+            border-radius: 12px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        .success { background: #4ecdc4; color: white; }
+        .error { background: #ff6b6b; color: white; }
+        .warning { background: #ffd93d; color: #333; }
+        .info { background: #667eea; color: white; }
+        button {
+            background: #4ecdc4;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            margin: 5px;
+            font-weight: bold;
+        }
+        button:hover {
+            background: #44a08d;
+            transform: translateY(-2px);
+        }
+        .instructions {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>🐾 FocusPet Extension Test Page</h1>
+    
+    <div class="instructions">
+        <h2>📋 Installation Instructions</h2>
+        <ol>
+            <li>Open Chrome and go to <code>chrome://extensions/</code></li>
+            <li>Enable "Developer mode" (toggle in top right)</li>
+            <li>Click "Load unpacked" and select the FocusPet folder</li>
+            <li>Look for the FocusPet icon in your toolbar</li>
+            <li>Click the icon to open the extension popup</li>
+        </ol>
+    </div>
+
+    <div class="test-card">
+        <h2>🧪 Manual Testing Checklist</h2>
+        
+        <h3>✅ Pet Interactions</h3>
+        <div id="pet-tests">
+            <div class="status info">Test pet interaction buttons (Feed, Play, Pet)</div>
+            <button onclick="testPetInteractions()">Test Pet Buttons</button>
+        </div>
+
+        <h3>⏱️ Timer Functionality</h3>
+        <div id="timer-tests">
+            <div class="status info">Test custom timer (try 1 minute for quick testing)</div>
+            <button onclick="testTimer()">Test Timer</button>
+        </div>
+
+        <h3>💬 Speech Bubbles</h3>
+        <div id="speech-tests">
+            <div class="status info">Test pet speech bubbles and personality</div>
+            <button onclick="testSpeech()">Test Speech</button>
+        </div>
+
+        <h3>🔔 Notifications</h3>
+        <div id="notification-tests">
+            <div class="status info">Test Chrome notifications (ensure they're enabled)</div>
+            <button onclick="testNotifications()">Test Notifications</button>
+        </div>
+
+        <h3>🎮 Gamification</h3>
+        <div id="gamification-tests">
+            <div class="status info">Test XP, levels, and achievements</div>
+            <button onclick="testGamification()">Test Gamification</button>
+        </div>
+    </div>
+
+    <div class="test-card">
+        <h2>🚨 Troubleshooting</h2>
+        
+        <h3>Common Issues & Solutions:</h3>
+        <ul>
+            <li><strong>Extension not loading:</strong> Check that manifest.json is in the root folder</li>
+            <li><strong>No notifications:</strong> Enable notifications in Chrome settings</li>
+            <li><strong>Buttons not working:</strong> Check browser console for errors (F12)</li>
+            <li><strong>Timer not starting:</strong> Ensure background script permissions are granted</li>
+            <li><strong>Pet not responding:</strong> Try refreshing the extension popup</li>
+        </ul>
+
+        <h3>Debug Tools:</h3>
+        <button onclick="openConsole()">Open Developer Console</button>
+        <button onclick="checkExtensions()">Check Extensions Page</button>
+        <button onclick="testStorage()">Test Storage</button>
+    </div>
+
+    <div class="test-card">
+        <h2>🎯 Expected Behavior</h2>
+        
+        <h3>When Working Correctly:</h3>
+        <ul>
+            <li>🐱 Pet appears with speech bubble saying "Ready to focus together?"</li>
+            <li>🎯 Timer can be set from 1-60 minutes with quick select buttons</li>
+            <li>🍖 Feed button increases hunger and happiness (30s cooldown)</li>
+            <li>🎾 Play button increases happiness, decreases hunger (1min cooldown)</li>
+            <li>👋 Pet button gives small happiness boost and speech</li>
+            <li>⏰ Timer completion shows notifications and pet reactions</li>
+            <li>🎁 Random rewards appear after completing sessions</li>
+            <li>📊 XP and level progress updates in real-time</li>
+        </ul>
+    </div>
+
+    <script>
+        function testPetInteractions() {
+            alert('🐾 Test Instructions:\n\n1. Click the FocusPet extension icon\n2. Try clicking Feed, Play, and Pet buttons\n3. Watch for speech bubbles and stat changes\n4. Check that cooldowns work (Feed: 30s, Play: 1min)');
+        }
+
+        function testTimer() {
+            alert('⏱️ Test Instructions:\n\n1. Set timer to 1 minute for quick testing\n2. Click "Start Focus"\n3. Watch for progress ring animation\n4. Wait for completion notification\n5. Check that pet gains XP and shows happy speech');
+        }
+
+        function testSpeech() {
+            alert('💬 Test Instructions:\n\n1. Open FocusPet popup\n2. Click on the pet emoji\n3. Try different actions (feed, play, pet)\n4. Start and complete a timer\n5. Watch for different speech bubbles');
+        }
+
+        function testNotifications() {
+            alert('🔔 Test Instructions:\n\n1. Ensure Chrome notifications are enabled\n2. Start a 1-minute timer\n3. Wait for completion\n4. Check for browser notifications\n5. Try visiting distracting sites during timer');
+        }
+
+        function testGamification() {
+            alert('🎮 Test Instructions:\n\n1. Complete actions to gain XP\n2. Watch XP bar fill up\n3. Try to level up your pet\n4. Check achievements section\n5. Look for random reward popups');
+        }
+
+        function openConsole() {
+            alert('Press F12 to open Developer Tools\nCheck Console tab for any error messages');
+        }
+
+        function checkExtensions() {
+            window.open('chrome://extensions/', '_blank');
+        }
+
+        function testStorage() {
+            if (typeof chrome !== 'undefined' && chrome.storage) {
+                chrome.storage.local.get(null, (data) => {
+                    console.log('Extension storage data:', data);
+                    alert('Check console for storage data');
+                });
+            } else {
+                alert('Chrome storage API not available on this page');
+            }
+        }
+
+        // Auto-check if extension is loaded
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                if (typeof chrome !== 'undefined' && chrome.runtime) {
+                    document.querySelector('#pet-tests .status').className = 'status success';
+                    document.querySelector('#pet-tests .status').textContent = '✅ Chrome extension API detected';
+                } else {
+                    document.querySelector('#pet-tests .status').className = 'status warning';
+                    document.querySelector('#pet-tests .status').textContent = '⚠️ Extension API not detected - load extension first';
+                }
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
