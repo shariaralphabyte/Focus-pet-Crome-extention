@@ -180,7 +180,7 @@ We welcome contributions! Here's how you can help:
 
 ### **Development Setup**
 ```bash
-git clone https://github.com/yourusername/focuspet
+git clone https://github.com/shariaralphabyte/Focus-pet-Crome-extention.git
 cd focuspet
 # Load unpacked extension in Chrome
 # Make changes and test
@@ -203,8 +203,8 @@ Love FocusPet? Here's how you can support the project:
 ## 📞 Contact
 
 - **GitHub**: [Your GitHub Profile]
-- **Email**: your.email@example.com
-- **Twitter**: @YourTwitter
+- **Email**: contact.shariar.cse@gmail.com
+- **Youtube**: @codeprobro
 
 ---
 
