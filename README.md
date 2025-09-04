@@ -49,7 +49,7 @@ FocusPet is a Chrome extension that gamifies productivity by pairing you with an
 
 1. **Download the Extension**
    ```bash
-   git clone https://github.com/yourusername/focuspet
+   git clone https://github.com/shariaralphabyte/Focus-pet-Crome-extention.git
    # OR download and extract the ZIP file
    ```
 
