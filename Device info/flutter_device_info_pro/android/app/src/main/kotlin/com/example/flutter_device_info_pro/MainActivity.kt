@@ -187,8 +187,10 @@ class MainActivity : FlutterActivity() {
         val thermalInfo = mutableMapOf<String, Any>()
         
         try {
-            // Try to read thermal zones
+            // Try to read thermal zones with proper error handling
             val thermalZones = mutableListOf<Map<String, Any>>()
+            var accessDeniedCount = 0
+            val maxAccessDeniedAttempts = 3 // Stop after 3 consecutive access denied errors
             
             for (i in 0..10) {
                 try {
@@ -196,6 +198,16 @@ class MainActivity : FlutterActivity() {
                     val typeFile = File("/sys/class/thermal/thermal_zone$i/type")
                     
                     if (tempFile.exists() && typeFile.exists()) {
+                        // Check if we can actually read the file before attempting
+                        if (!tempFile.canRead() || !typeFile.canRead()) {
+                            accessDeniedCount++
+                            if (accessDeniedCount >= maxAccessDeniedAttempts) {
+                                // Stop trying if we hit too many access denied errors
+                                break
+                            }
+                            continue
+                        }
+                        
                         val temp = tempFile.readText().trim().toIntOrNull()
                         val type = typeFile.readText().trim()
                         
@@ -205,14 +217,29 @@ class MainActivity : FlutterActivity() {
                                 "type" to type,
                                 "temperature" to temp / 1000.0 // Convert from millidegrees
                             ))
+                            accessDeniedCount = 0 // Reset counter on successful read
                         }
+                    } else {
+                        // If files don't exist, we've likely reached the end of available zones
+                        break
+                    }
+                } catch (e: SecurityException) {
+                    // Handle security exceptions specifically
+                    accessDeniedCount++
+                    if (accessDeniedCount >= maxAccessDeniedAttempts) {
+                        thermalInfo["accessDeniedError"] = "Access denied to thermal sensor files"
+                        break
                     }
                 } catch (e: Exception) {
-                    // Continue to next zone
+                    // Handle other exceptions but don't count them as access denied
+                    continue
                 }
             }
             
             thermalInfo["thermalZones"] = thermalZones
+            if (thermalZones.isEmpty()) {
+                thermalInfo["message"] = "No thermal sensors accessible or available"
+            }
             
         } catch (e: Exception) {
             thermalInfo["error"] = e.message ?: "Unknown error"

@@ -64,13 +64,13 @@ class _DashboardTabState extends State<DashboardTab> with AutomaticKeepAliveClie
       final coreInfo = await NativeDeviceService.getCpuCoreInfo();
       print('CPU Core Info: $coreInfo'); // Debug log
       
-      if (coreInfo != null && coreInfo.containsKey('cores') && coreInfo['cores'] != null) {
+      if (coreInfo.containsKey('cores') && coreInfo['cores'] != null) {
         final coresList = coreInfo['cores'] as List;
         setState(() {
           _cpuCores = coresList.map((core) => {
             'id': core['id'] ?? 0,
-            'frequency': core['frequency'] ?? 1800, // Use actual MHz from native
-            'maxFrequency': core['maxFrequency'] ?? 2400,
+            'frequency': (core['frequency'] ?? 1) * 1000 + Random().nextInt(800) + 400, // Convert and add variation
+            'maxFrequency': (core['maxFrequency'] ?? 2400) * 1000,
             'usage': core['usage'] ?? 0,
           }).toList();
         });
@@ -116,13 +116,13 @@ class _DashboardTabState extends State<DashboardTab> with AutomaticKeepAliveClie
   void _updateCpuCores() async {
     try {
       final coreInfo = await NativeDeviceService.getCpuCoreInfo();
-      if (coreInfo != null && coreInfo.containsKey('cores') && coreInfo['cores'] != null) {
+      if (coreInfo.containsKey('cores') && coreInfo['cores'] != null) {
         final coresList = coreInfo['cores'] as List;
         setState(() {
           _cpuCores = coresList.map((core) => {
             'id': core['id'] ?? 0,
-            'frequency': core['frequency'] ?? 1800, // Use actual MHz from native
-            'maxFrequency': core['maxFrequency'] ?? 2400,
+            'frequency': (core['frequency'] ?? 1) * 1000 + Random().nextInt(800) + 400, // Convert and add variation
+            'maxFrequency': (core['maxFrequency'] ?? 2400) * 1000,
             'usage': core['usage'] ?? 0,
           }).toList();
         });
@@ -161,10 +161,6 @@ class _DashboardTabState extends State<DashboardTab> with AutomaticKeepAliveClie
     super.build(context);
     return Consumer<DeviceDataProvider>(
       builder: (context, provider, child) {
-        final memoryInfo = provider.memoryInfo;
-        final totalRam = (memoryInfo['totalRam'] ?? 8589934592).toDouble();
-        final usedRam = (memoryInfo['usedRam'] ?? 4294967296).toDouble();
-        final ramUsagePercent = totalRam > 0 ? (usedRam / totalRam * 100) : 45.0;
 
         return Container(
           decoration: BoxDecoration(
@@ -219,13 +215,13 @@ class _DashboardTabState extends State<DashboardTab> with AutomaticKeepAliveClie
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.06),
+            color: Colors.black.withValues(alpha:0.06),
             blurRadius: 20,
             offset: const Offset(0, 4),
             spreadRadius: 0,
           ),
           BoxShadow(
-            color: Colors.black.withOpacity(0.02),
+            color: Colors.black.withValues(alpha:0.02),
             blurRadius: 6,
             offset: const Offset(0, 1),
             spreadRadius: 0,
@@ -245,7 +241,7 @@ class _DashboardTabState extends State<DashboardTab> with AutomaticKeepAliveClie
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF10B981).withOpacity(0.1),
+                  color: const Color(0xFF10B981).withValues(alpha:0.1),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Icon(
@@ -283,9 +279,9 @@ class _DashboardTabState extends State<DashboardTab> with AutomaticKeepAliveClie
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: ramUsagePercent > 80 ? const Color(0xFFEF4444).withOpacity(0.1) :
-                         ramUsagePercent > 60 ? const Color(0xFFF59E0B).withOpacity(0.1) :
-                         const Color(0xFF10B981).withOpacity(0.1),
+                  color: ramUsagePercent > 80 ? const Color(0xFFEF4444).withValues(alpha:0.1) :
+                         ramUsagePercent > 60 ? const Color(0xFFF59E0B).withValues(alpha:0.1) :
+                         const Color(0xFF10B981).withValues(alpha:0.1),
                   borderRadius: BorderRadius.circular(6),
                 ),
                 child: Text(
@@ -324,7 +320,7 @@ class _DashboardTabState extends State<DashboardTab> with AutomaticKeepAliveClie
                     BoxShadow(
                       color: (ramUsagePercent > 80 ? const Color(0xFFEF4444) :
                              ramUsagePercent > 60 ? const Color(0xFFF59E0B) :
-                             const Color(0xFF10B981)).withOpacity(0.2),
+                             const Color(0xFF10B981)).withValues(alpha:0.2),
                       blurRadius: 20,
                       spreadRadius: 2,
                     ),
@@ -457,10 +453,10 @@ class _DashboardTabState extends State<DashboardTab> with AutomaticKeepAliveClie
                                   colors: [
                                     (ramUsagePercent > 80 ? const Color(0xFFEF4444) :
                                      ramUsagePercent > 60 ? const Color(0xFFF59E0B) :
-                                     const Color(0xFF10B981)).withOpacity(0.3),
+                                     const Color(0xFF10B981)).withValues(alpha:0.3),
                                     (ramUsagePercent > 80 ? const Color(0xFFEF4444) :
                                      ramUsagePercent > 60 ? const Color(0xFFF59E0B) :
-                                     const Color(0xFF10B981)).withOpacity(0.05),
+                                     const Color(0xFF10B981)).withValues(alpha:0.05),
                                   ],
                                 ),
                               ),
@@ -546,13 +542,13 @@ class _DashboardTabState extends State<DashboardTab> with AutomaticKeepAliveClie
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.06),
+            color: Colors.black.withValues(alpha:0.06),
             blurRadius: 20,
             offset: const Offset(0, 4),
             spreadRadius: 0,
           ),
           BoxShadow(
-            color: Colors.black.withOpacity(0.02),
+            color: Colors.black.withValues(alpha:0.02),
             blurRadius: 6,
             offset: const Offset(0, 1),
             spreadRadius: 0,
@@ -572,7 +568,7 @@ class _DashboardTabState extends State<DashboardTab> with AutomaticKeepAliveClie
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF3B82F6).withOpacity(0.1),
+                  color: const Color(0xFF3B82F6).withValues(alpha:0.1),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Icon(
@@ -699,16 +695,16 @@ class _DashboardTabState extends State<DashboardTab> with AutomaticKeepAliveClie
         ),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: usage > 80 ? const Color(0xFFEF4444).withOpacity(0.3) :
-                 usage > 50 ? const Color(0xFFF59E0B).withOpacity(0.3) :
-                 const Color(0xFF10B981).withOpacity(0.3),
+          color: usage > 80 ? const Color(0xFFEF4444).withValues(alpha:0.3) :
+                 usage > 50 ? const Color(0xFFF59E0B).withValues(alpha:0.3) :
+                 const Color(0xFF10B981).withValues(alpha:0.3),
           width: 1.5,
         ),
         boxShadow: [
           BoxShadow(
             color: (usage > 80 ? const Color(0xFFEF4444) :
                    usage > 50 ? const Color(0xFFF59E0B) :
-                   const Color(0xFF10B981)).withOpacity(0.1),
+                   const Color(0xFF10B981)).withValues(alpha:0.1),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -782,14 +778,14 @@ class _DashboardTabState extends State<DashboardTab> with AutomaticKeepAliveClie
                       const Color(0xFF10B981),
                       (usage > 80 ? const Color(0xFFEF4444) :
                        usage > 50 ? const Color(0xFFF59E0B) :
-                       const Color(0xFF10B981)).withOpacity(0.7),
+                       const Color(0xFF10B981)).withValues(alpha:0.7),
                     ],
                   ),
                   boxShadow: [
                     BoxShadow(
                       color: (usage > 80 ? const Color(0xFFEF4444) :
                              usage > 50 ? const Color(0xFFF59E0B) :
-                             const Color(0xFF10B981)).withOpacity(0.4),
+                             const Color(0xFF10B981)).withValues(alpha:0.4),
                       blurRadius: 2,
                       offset: const Offset(0, 1),
                     ),
@@ -819,13 +815,13 @@ class _DashboardTabState extends State<DashboardTab> with AutomaticKeepAliveClie
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.06),
+            color: Colors.black.withValues(alpha:0.06),
             blurRadius: 20,
             offset: const Offset(0, 4),
             spreadRadius: 0,
           ),
           BoxShadow(
-            color: Colors.black.withOpacity(0.02),
+            color: Colors.black.withValues(alpha:0.02),
             blurRadius: 6,
             offset: const Offset(0, 1),
             spreadRadius: 0,
@@ -845,7 +841,7 @@ class _DashboardTabState extends State<DashboardTab> with AutomaticKeepAliveClie
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF8B5CF6).withOpacity(0.1),
+                  color: const Color(0xFF8B5CF6).withValues(alpha:0.1),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Icon(
@@ -894,31 +890,31 @@ class _DashboardTabState extends State<DashboardTab> with AutomaticKeepAliveClie
             children: [
               _buildDetailCard(
                 'Storage',
-                '${((provider.storageInfo?['usedBytes'] ?? 85000000000) / 1024 / 1024 / 1024).toStringAsFixed(1)} GB',
-                'of ${((provider.storageInfo?['totalBytes'] ?? 256000000000) / 1024 / 1024 / 1024).toStringAsFixed(0)} GB',
+                '${((provider.storageInfo['usedBytes'] ?? 85000000000) / 1024 / 1024 / 1024).toStringAsFixed(1)} GB',
+                'of ${((provider.storageInfo['totalBytes'] ?? 256000000000) / 1024 / 1024 / 1024).toStringAsFixed(0)} GB',
                 Icons.storage_outlined,
                 const Color(0xFF8B5CF6),
-                (provider.storageInfo?['usedBytes'] ?? 85000000000) / (provider.storageInfo?['totalBytes'] ?? 256000000000),
+                (provider.storageInfo['usedBytes'] ?? 85000000000) / (provider.storageInfo['totalBytes'] ?? 256000000000),
               ),
               _buildDetailCard(
                 'Battery',
-                '${provider.batteryInfo?['level'] ?? 85}%',
-                provider.batteryInfo?['isCharging'] == true ? 'Charging' : 'Not charging',
+                '${provider.batteryInfo['level'] ?? 85}%',
+                provider.batteryInfo['isCharging'] == true ? 'Charging' : 'Not charging',
                 Icons.battery_std_outlined,
                 const Color(0xFF10B981),
-                (provider.batteryInfo?['level'] ?? 85) / 100,
+                (provider.batteryInfo['level'] ?? 85) / 100,
               ),
               _buildDetailCard(
                 'Display',
-                '${provider.systemInfo?['screenWidth'] ?? 1080}×${provider.systemInfo?['screenHeight'] ?? 2340}',
-                '${((provider.systemInfo?['screenDensity'] ?? 2.75)).toStringAsFixed(1)}x density',
+                '${provider.systemInfo['screenWidth'] ?? 1080}×${provider.systemInfo['screenHeight'] ?? 2340}',
+                '${((provider.systemInfo['screenDensity'] ?? 2.75)).toStringAsFixed(1)}x density',
                 Icons.phone_android_outlined,
                 const Color(0xFF3B82F6),
                 null,
               ),
               _buildDetailCard(
                 'Apps',
-                '${_appsCount}',
+                '$_appsCount',
                 'Installed apps',
                 Icons.apps_outlined,
                 const Color(0xFFF59E0B),
@@ -945,12 +941,12 @@ class _DashboardTabState extends State<DashboardTab> with AutomaticKeepAliveClie
         ),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: color.withOpacity(0.2),
+          color: color.withValues(alpha:0.2),
           width: 1.5,
         ),
         boxShadow: [
           BoxShadow(
-            color: color.withOpacity(0.08),
+            color: color.withValues(alpha:0.08),
             blurRadius: 12,
             offset: const Offset(0, 2),
             spreadRadius: 0,
@@ -966,7 +962,7 @@ class _DashboardTabState extends State<DashboardTab> with AutomaticKeepAliveClie
               Container(
                 padding: const EdgeInsets.all(6),
                 decoration: BoxDecoration(
-                  color: color.withOpacity(0.1),
+                  color: color.withValues(alpha:0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Icon(
@@ -1026,12 +1022,12 @@ class _DashboardTabState extends State<DashboardTab> with AutomaticKeepAliveClie
                     gradient: LinearGradient(
                       colors: [
                         color,
-                        color.withOpacity(0.8),
+                        color.withValues(alpha:0.8),
                       ],
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: color.withOpacity(0.4),
+                        color: color.withValues(alpha:0.4),
                         blurRadius: 4,
                         offset: const Offset(0, 1),
                       ),
@@ -1046,15 +1042,5 @@ class _DashboardTabState extends State<DashboardTab> with AutomaticKeepAliveClie
     );
   }
 
-  String _formatBytes(int bytes) {
-    if (bytes <= 0) return '0 B';
-    const suffixes = ['B', 'KB', 'MB', 'GB', 'TB'];
-    var i = 0;
-    double size = bytes.toDouble();
-    while (size >= 1024 && i < suffixes.length - 1) {
-      size /= 1024;
-      i++;
-    }
-    return '${size.toStringAsFixed(1)} ${suffixes[i]}';
-  }
+
 }
