@@ -1,0 +1,61 @@
+{
+  "manifest_version": 3,
+  "name": "DevContext Pro - Intelligent Project Workspace Manager",
+  "version": "1.0.0",
+  "description": "Automatically detect and manage development contexts across browser sessions, creating intelligent workspaces for full-stack developers.",
+  
+  "permissions": [
+    "tabs",
+    "tabGroups",
+    "storage",
+    "bookmarks",
+    "activeTab",
+    "background",
+    "scripting",
+    "notifications",
+    "declarativeNetRequest"
+  ],
+  
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  
+  "background": {
+    "service_worker": "background/service-worker.js"
+  },
+  
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content/project-detector.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_title": "DevContext Pro",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  
+  "options_page": "options/options.html",
+  
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  
+  "web_accessible_resources": [
+    {
+      "resources": ["content/injected-script.js"],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}

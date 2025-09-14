@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DevContext Pro - Settings</title>
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <header class="header">
+      <div class="header-content">
+        <div class="logo">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2L2 7V17L12 22L22 17V7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+            <path d="M12 22V12" stroke="currentColor" stroke-width="2"/>
+            <path d="M2 7L12 12L22 7" stroke="currentColor" stroke-width="2"/>
+          </svg>
+          <div>
+            <h1>DevContext Pro</h1>
+            <p>Extension Settings</p>
+          </div>
+        </div>
+        <div class="header-actions">
+          <button id="resetBtn" class="reset-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="23 4 23 10 17 10"></polyline>
+              <polyline points="1 20 1 14 7 14"></polyline>
+              <path d="m3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+            </svg>
+            Reset to Defaults
+          </button>
+          <button id="saveBtn" class="save-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+              <polyline points="17,21 17,13 7,13 7,21"></polyline>
+              <polyline points="7,3 7,8 15,8"></polyline>
+            </svg>
+            Save Settings
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Settings Content -->
+    <div class="settings-content">
+      <!-- General Settings -->
+      <section class="settings-section">
+        <div class="section-header">
+          <h2>General Settings</h2>
+          <p>Configure basic extension behavior</p>
+        </div>
+        
+        <div class="settings-grid">
+          <div class="setting-item">
+            <div class="setting-info">
+              <h3>Auto-detect Projects</h3>
+              <p>Automatically detect and create workspaces for development projects</p>
+            </div>
+            <div class="setting-control">
+              <label class="toggle">
+                <input type="checkbox" id="autoDetect" checked>
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+          </div>
+
+          <div class="setting-item">
+            <div class="setting-info">
+              <h3>Smart Tab Grouping</h3>
+              <p>Automatically group related tabs into workspaces</p>
+            </div>
+            <div class="setting-control">
+              <label class="toggle">
+                <input type="checkbox" id="smartGrouping" checked>
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+          </div>
+
+          <div class="setting-item">
+            <div class="setting-info">
+              <h3>Session Persistence</h3>
+              <p>Save and restore workspace sessions across browser restarts</p>
+            </div>
+            <div class="setting-control">
+              <label class="toggle">
+                <input type="checkbox" id="sessionPersistence" checked>
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+          </div>
+
+          <div class="setting-item">
+            <div class="setting-info">
+              <h3>Context Switch Tracking</h3>
+              <p>Track workspace switches for analytics and insights</p>
+            </div>
+            <div class="setting-control">
+              <label class="toggle">
+                <input type="checkbox" id="contextTracking" checked>
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+          </div>
+
+          <div class="setting-item">
+            <div class="setting-info">
+              <h3>Minimum Confidence Threshold</h3>
+              <p>Minimum confidence level required for automatic project detection</p>
+            </div>
+            <div class="setting-control">
+              <div class="range-input">
+                <input type="range" id="confidenceThreshold" min="0.1" max="1.0" step="0.1" value="0.3">
+                <span class="range-value">30%</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="setting-item">
+            <div class="setting-info">
+              <h3>Max Tabs per Workspace</h3>
+              <p>Maximum number of tabs allowed in a single workspace</p>
+            </div>
+            <div class="setting-control">
+              <div class="number-input">
+                <input type="number" id="maxTabs" min="5" max="50" value="20">
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Focus Mode Settings -->
+      <section class="settings-section">
+        <div class="section-header">
+          <h2>Focus Mode</h2>
+          <p>Configure focus mode and distraction blocking</p>
+        </div>
+        
+        <div class="settings-grid">
+          <div class="setting-item">
+            <div class="setting-info">
+              <h3>Enable Focus Mode</h3>
+              <p>Block distracting websites during focus sessions</p>
+            </div>
+            <div class="setting-control">
+              <label class="toggle">
+                <input type="checkbox" id="enableFocusMode" checked>
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+          </div>
+
+          <div class="setting-item">
+            <div class="setting-info">
+              <h3>Auto Focus Detection</h3>
+              <p>Automatically enable focus mode during deep work sessions</p>
+            </div>
+            <div class="setting-control">
+              <label class="toggle">
+                <input type="checkbox" id="autoFocusDetection">
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+          </div>
+
+          <div class="setting-item">
+            <div class="setting-info">
+              <h3>Focus Session Duration</h3>
+              <p>Default duration for focus sessions (minutes)</p>
+            </div>
+            <div class="setting-control">
+              <div class="number-input">
+                <input type="number" id="focusDuration" min="15" max="240" value="45">
+              </div>
+            </div>
+          </div>
+
+          <div class="setting-item">
+            <div class="setting-info">
+              <h3>Break Reminder</h3>
+              <p>Show break reminders after focus sessions</p>
+            </div>
+            <div class="setting-control">
+              <label class="toggle">
+                <input type="checkbox" id="breakReminder" checked>
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Blocked Sites -->
+        <div class="blocked-sites-section">
+          <div class="subsection-header">
+            <h3>Blocked Sites</h3>
+            <p>Websites to block during focus mode</p>
+          </div>
+          
+          <div class="blocked-sites-input">
+            <input type="text" id="newBlockedSite" placeholder="Enter website URL (e.g., facebook.com)">
+            <button id="addBlockedSite" class="add-btn">Add</button>
+          </div>
+          
+          <div class="blocked-sites-list" id="blockedSitesList">
+            <!-- Blocked sites will be populated here -->
+          </div>
+        </div>
+      </section>
+
+      <!-- Workspace Settings -->
+      <section class="settings-section">
+        <div class="section-header">
+          <h2>Workspace Management</h2>
+          <p>Configure workspace behavior and appearance</p>
+        </div>
+        
+        <div class="settings-grid">
+          <div class="setting-item">
+            <div class="setting-info">
+              <h3>Auto-merge Similar Workspaces</h3>
+              <p>Automatically merge workspaces with similar technologies</p>
+            </div>
+            <div class="setting-control">
+              <label class="toggle">
+                <input type="checkbox" id="autoMergeWorkspaces">
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+          </div>
+
+          <div class="setting-item">
+            <div class="setting-info">
+              <h3>Workspace Color Theme</h3>
+              <p>Default color scheme for new workspaces</p>
+            </div>
+            <div class="setting-control">
+              <select id="colorTheme" class="select-input">
+                <option value="auto">Auto (Based on Tech Stack)</option>
+                <option value="blue">Blue Theme</option>
+                <option value="green">Green Theme</option>
+                <option value="purple">Purple Theme</option>
+                <option value="random">Random Colors</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="setting-item">
+            <div class="setting-info">
+              <h3>Inactive Workspace Cleanup</h3>
+              <p>Automatically clean up workspaces not used for specified days</p>
+            </div>
+            <div class="setting-control">
+              <div class="number-input">
+                <input type="number" id="cleanupDays" min="0" max="90" value="30" placeholder="Days (0 to disable)">
+              </div>
+            </div>
+          </div>
+
+          <div class="setting-item">
+            <div class="setting-info">
+              <h3>Show Workspace Notifications</h3>
+              <p>Show notifications when switching between workspaces</p>
+            </div>
+            <div class="setting-control">
+              <label class="toggle">
+                <input type="checkbox" id="workspaceNotifications" checked>
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Analytics Settings -->
+      <section class="settings-section">
+        <div class="section-header">
+          <h2>Analytics & Privacy</h2>
+          <p>Configure data collection and analytics preferences</p>
+        </div>
+        
+        <div class="settings-grid">
+          <div class="setting-item">
+            <div class="setting-info">
+              <h3>Collect Analytics Data</h3>
+              <p>Enable analytics tracking for productivity insights</p>
+            </div>
+            <div class="setting-control">
+              <label class="toggle">
+                <input type="checkbox" id="collectAnalytics" checked>
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+          </div>
+
+          <div class="setting-item">
+            <div class="setting-info">
+              <h3>Data Retention Period</h3>
+              <p>How long to keep analytics data (days)</p>
+            </div>
+            <div class="setting-control">
+              <select id="dataRetention" class="select-input">
+                <option value="30">30 days</option>
+                <option value="90" selected>90 days</option>
+                <option value="180">6 months</option>
+                <option value="365">1 year</option>
+                <option value="0">Forever</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="setting-item">
+            <div class="setting-info">
+              <h3>Export Analytics Data</h3>
+              <p>Download your analytics data for external analysis</p>
+            </div>
+            <div class="setting-control">
+              <button id="exportAnalytics" class="action-btn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="7,10 12,15 17,10"></polyline>
+                  <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+                Export Data
+              </button>
+            </div>
+          </div>
+
+          <div class="setting-item">
+            <div class="setting-info">
+              <h3>Clear All Data</h3>
+              <p>Delete all stored workspaces, analytics, and settings</p>
+            </div>
+            <div class="setting-control">
+              <button id="clearAllData" class="danger-btn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="3,6 5,6 21,6"></polyline>
+                  <path d="m19,6v14a2,2 0 0,1 -2,2H7a2,2 0 0,1 -2,-2V6m3,0V4a2,2 0 0,1 2,-2h4a2,2 0 0,1 2,2v2"></path>
+                </svg>
+                Clear All Data
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Advanced Settings -->
+      <section class="settings-section">
+        <div class="section-header">
+          <h2>Advanced Settings</h2>
+          <p>Advanced configuration options for power users</p>
+        </div>
+        
+        <div class="settings-grid">
+          <div class="setting-item">
+            <div class="setting-info">
+              <h3>Debug Mode</h3>
+              <p>Enable debug logging for troubleshooting</p>
+            </div>
+            <div class="setting-control">
+              <label class="toggle">
+                <input type="checkbox" id="debugMode">
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+          </div>
+
+          <div class="setting-item">
+            <div class="setting-info">
+              <h3>Custom Detection Rules</h3>
+              <p>Add custom rules for project detection</p>
+            </div>
+            <div class="setting-control">
+              <button id="customRules" class="action-btn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 20h9"></path>
+                  <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                </svg>
+                Edit Rules
+              </button>
+            </div>
+          </div>
+
+          <div class="setting-item">
+            <div class="setting-info">
+              <h3>Backup Settings</h3>
+              <p>Export your settings configuration</p>
+            </div>
+            <div class="setting-control">
+              <button id="backupSettings" class="action-btn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="7,10 12,15 17,10"></polyline>
+                  <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+                Backup
+              </button>
+            </div>
+          </div>
+
+          <div class="setting-item">
+            <div class="setting-info">
+              <h3>Import Settings</h3>
+              <p>Import settings from a backup file</p>
+            </div>
+            <div class="setting-control">
+              <input type="file" id="importFile" accept=".json" style="display: none;">
+              <button id="importSettings" class="action-btn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="17,10 12,15 7,10"></polyline>
+                  <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+                Import
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Save Status -->
+    <div class="save-status" id="saveStatus" style="display: none;">
+      <div class="status-content">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+          <polyline points="22,4 12,14.01 9,11.01"></polyline>
+        </svg>
+        <span>Settings saved successfully!</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Custom Rules Modal -->
+  <div class="modal" id="customRulesModal" style="display: none;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Custom Detection Rules</h3>
+        <button class="close-btn" id="closeRulesModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p>Add custom rules to improve project detection accuracy.</p>
+        <textarea id="customRulesText" rows="10" placeholder="Enter JSON rules configuration..."></textarea>
+      </div>
+      <div class="modal-footer">
+        <button id="cancelRules" class="secondary-btn">Cancel</button>
+        <button id="saveRules" class="primary-btn">Save Rules</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="options.js"></script>
+</body>
+</html>
