@@ -9,9 +9,6 @@ import {
   FiFilter, 
   FiCalendar, 
   FiUser, 
-  FiEye,
-  FiHeart,
-  FiMessageCircle,
   FiStar,
   FiChevronLeft,
   FiChevronRight
@@ -258,12 +255,12 @@ const NoticePage = () => {
                             className="block group"
                           >
                             <h2 className="text-xl font-semibold text-gray-900 dark:text-white group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors mb-2">
-                              {notice.title}
+                              {notice.title?.[i18n.language] || notice.title?.en || notice.title}
                             </h2>
                           </Link>
                           
                           <p className="text-gray-600 dark:text-gray-400 line-clamp-3 mb-4">
-                            {notice.content}
+                            {notice.content?.[i18n.language] || notice.content?.en || notice.content}
                           </p>
                         </div>
                       </div>
@@ -280,20 +277,9 @@ const NoticePage = () => {
                           </div>
                         </div>
 
-                        <div className="flex items-center space-x-4">
-                          <div className="flex items-center space-x-1">
-                            <FiEye className="w-4 h-4" />
-                            <span>{notice.views}</span>
-                          </div>
-                          <div className="flex items-center space-x-1">
-                            <FiHeart className={`w-4 h-4 ${notice.isLiked ? 'text-red-500 fill-current' : ''}`} />
-                            <span>{notice.likeCount}</span>
-                          </div>
-                          <div className="flex items-center space-x-1">
-                            <FiMessageCircle className="w-4 h-4" />
-                            <span>{notice.commentCount}</span>
-                          </div>
-                        </div>
+                        <span className="text-sm text-gray-500 dark:text-gray-400">
+                          {t('notices.publishedOn')} {formatDate(notice.publishDate)}
+                        </span>
                       </div>
                     </div>
                   </motion.div>

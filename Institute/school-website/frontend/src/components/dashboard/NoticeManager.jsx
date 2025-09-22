@@ -2,6 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
+import DatePicker from 'react-datepicker';
+import { registerLocale } from 'react-datepicker';
+import { format, parseISO } from 'date-fns';
+import { enGB, bn } from 'date-fns/locale';
+import 'react-datepicker/dist/react-datepicker.css';
 import { 
   FiPlus, 
   FiEdit, 
@@ -12,57 +17,132 @@ import {
   FiCalendar,
   FiEye,
   FiDownload,
-  FiPaperclip,
   FiAlertCircle,
   FiSearch,
+  FiUser,
+  FiClock,
+  FiPaperclip,
   FiFilter
 } from 'react-icons/fi';
-
 import { 
   fetchNotices,
   createNotice,
   updateNotice,
-  deleteNotice
+  deleteNotice 
 } from '../../store/slices/noticeSlice';
-
 import LoadingSpinner from '../common/LoadingSpinner';
+
+// Register locales
+registerLocale('en', enGB);
+registerLocale('bn', bn);
+
+// Helper function to convert English digits to Bengali
+const toBengaliNumber = (num) => {
+  if (typeof num !== 'string') num = String(num);
+  const numbers = {
+    '0': '০', '1': '১', '2': '২', '3': '৩', '4': '৪',
+    '5': '৫', '6': '৬', '7': '৭', '8': '৮', '9': '৯',
+    '-': '-', '/': '/', ':': ':', ' ': ' '
+  };
+  return num.split('').map(char => numbers[char] || char).join('');
+};
+
+// Helper function to convert Bengali digits to English
+const toEnglishNumber = (num) => {
+  if (typeof num !== 'string') num = String(num);
+  const numbers = {
+    '০': '0', '১': '1', '২': '2', '৩': '3', '৪': '4',
+    '৫': '5', '৬': '6', '৭': '7', '৮': '8', '৯': '9',
+    '-': '-', '/': '/', ':': ':', ' ': ' '
+  };
+  return num.split('').map(char => numbers[char] || char).join('');
+};
+
+// Format date for display based on language
+const formatDateForDisplay = (dateString, language) => {
+  if (!dateString) return '';
+  const date = new Date(dateString);
+  if (isNaN(date.getTime())) return '';
+  
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  
+  const formatted = `${year}-${month}-${day}`;
+  return language === 'bn' ? toBengaliNumber(formatted) : formatted;
+};
+
+// Parse date from input based on language
+const parseDateInput = (dateString, language) => {
+  if (!dateString) return '';
+  
+  // Convert Bengali numbers to English if needed
+  const englishDateString = language === 'bn' ? toEnglishNumber(dateString) : dateString;
+  
+  // Parse the date
+  const date = new Date(englishDateString);
+  if (isNaN(date.getTime())) return '';
+  
+  // Format as YYYY-MM-DD for the date input
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  
+  return `${year}-${month}-${day}`;
+};
 
 const NoticeManager = () => {
   const dispatch = useDispatch();
   const { t, i18n } = useTranslation();
+  const { notices, loading, error, pagination } = useSelector((state) => state.notices);
   const currentLang = i18n.language;
   
-  const { notices, loading, pagination } = useSelector(state => state.notices);
-  
-  const [showModal, setShowModal] = useState(false);
-  const [editingNotice, setEditingNotice] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedType, setSelectedType] = useState('all');
+  const [showModal, setShowModal] = useState(false);
+  const [editingNotice, setEditingNotice] = useState(null);
+  const [publishDateInput, setPublishDateInput] = useState('');
+  const [expiryDateInput, setExpiryDateInput] = useState('');
   const [formData, setFormData] = useState({
     title: { en: '', bn: '' },
     content: { en: '', bn: '' },
-    type: 'general',
-    priority: 'medium',
-    isUrgent: false,
-    publishDate: '',
-    expiryDate: '',
+    excerpt: { en: '', bn: '' },
+    category: 'General',
+    priority: 'Medium',
+    targetAudience: ['All'],
+    publishDate: new Date(),
+    expiryDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
     attachment: null,
+    isPublished: true,
+    isPinned: false,
     isActive: true
   });
 
+  const categories = [
+    'General', 'Academic', 'Examination', 'Admission', 'Holiday',
+    'Event', 'Sports', 'Cultural', 'Emergency', 'Fee', 'Result',
+    'Meeting', 'Training', 'Workshop', 'Announcement', 'Circular'
+  ];
+
+    const priorities = ['Low', 'Medium', 'High', 'Urgent'];
+  
+  const audienceOptions = ['All', 'Students', 'Teachers', 'Parents', 'Staff', 'Management', 'Alumni'];
+
   const noticeTypes = [
     { value: 'general', label: currentLang === 'bn' ? 'সাধারণ' : 'General' },
-    { value: 'academic', label: currentLang === 'bn' ? 'একাডেমিক' : 'Academic' },
+    { value: 'academic', label: currentLang === 'bn' ? 'শিক্ষাগত' : 'Academic' },
+    { value: 'exam', label: currentLang === 'bn' ? 'পরীক্ষা' : 'Examination' },
     { value: 'admission', label: currentLang === 'bn' ? 'ভর্তি' : 'Admission' },
-    { value: 'exam', label: currentLang === 'bn' ? 'পরীক্ষা' : 'Exam' },
-    { value: 'event', label: currentLang === 'bn' ? 'ইভেন্ট' : 'Event' },
-    { value: 'holiday', label: currentLang === 'bn' ? 'ছুটি' : 'Holiday' }
+    { value: 'holiday', label: currentLang === 'bn' ? 'ছুটি' : 'Holiday' },
+    { value: 'event', label: currentLang === 'bn' ? 'অনুষ্ঠান' : 'Event' },
+    { value: 'urgent', label: currentLang === 'bn' ? 'জরুরি' : 'Urgent' },
   ];
 
   const priorityLevels = [
-    { value: 'low', label: currentLang === 'bn' ? 'কম' : 'Low', color: 'text-green-600' },
-    { value: 'medium', label: currentLang === 'bn' ? 'মাধ্যম' : 'Medium', color: 'text-yellow-600' },
-    { value: 'high', label: currentLang === 'bn' ? 'উচ্চ' : 'High', color: 'text-red-600' }
+    { value: 'low', label: currentLang === 'bn' ? 'কম' : 'Low', color: 'text-green-500' },
+    { value: 'medium', label: currentLang === 'bn' ? 'মধ্যম' : 'Medium', color: 'text-yellow-500' },
+    { value: 'high', label: currentLang === 'bn' ? 'উচ্চ' : 'High', color: 'text-orange-500' },
+    { value: 'urgent', label: currentLang === 'bn' ? 'জরুরি' : 'Urgent', color: 'text-red-500' },
   ];
 
   useEffect(() => {
@@ -72,19 +152,37 @@ const NoticeManager = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    const noticeData = new FormData();
-    Object.keys(formData).forEach(key => {
-      if (key === 'attachment') return;
-      if (typeof formData[key] === 'object' && formData[key] !== null) {
-        noticeData.append(key, JSON.stringify(formData[key]));
-      } else {
-        noticeData.append(key, formData[key]);
-      }
-    });
-    
-    if (formData.attachment) {
-      noticeData.append('attachment', formData.attachment);
+    // Validate required fields
+    if (!formData.title?.en || !formData.title?.bn) {
+      alert(currentLang === 'bn' ? 'দয়া করে ইংরেজি এবং বাংলা উভয় শিরোনাম লিখুন' : 'Please provide both English and Bengali titles');
+      return;
     }
+    
+    if (!formData.content?.en || !formData.content?.bn) {
+      alert(currentLang === 'bn' ? 'দয়া করে ইংরেজি এবং বাংলা উভয় বিবরণ লিখুন' : 'Please provide both English and Bengali content');
+      return;
+    }
+    
+    // Format the notice data
+    const noticeData = {
+      title: {
+        en: formData.title.en.trim(),
+        bn: formData.title.bn.trim()
+      },
+      content: {
+        en: formData.content.en.trim(),
+        bn: formData.content.bn.trim()
+      },
+      type: formData.type,
+      priority: formData.priority,
+      isUrgent: formData.isUrgent,
+      publishDate: formData.publishDate.toISOString(),
+      expiryDate: formData.expiryDate.toISOString(),
+      targetAudience: ['All'],
+      isPublished: true,
+      isPinned: false,
+      isActive: true
+    };
 
     try {
       if (editingNotice) {
@@ -98,6 +196,9 @@ const NoticeManager = () => {
       dispatch(fetchNotices());
     } catch (error) {
       console.error('Error saving notice:', error);
+      alert(currentLang === 'bn' 
+        ? 'নোটিশ সংরক্ষণ করতে সমস্যা হয়েছে। আবার চেষ্টা করুন।' 
+        : 'Error saving notice. Please try again.');
     }
   };
 
@@ -112,18 +213,44 @@ const NoticeManager = () => {
     }
   };
 
+  const handleDateChange = (date, field) => {
+    if (!date) return;
+    
+    setFormData(prev => ({
+      ...prev,
+      [field]: date
+    }));
+  };
+
   const resetForm = () => {
+    const today = new Date();
+    const nextMonth = new Date(today);
+    nextMonth.setMonth(today.getMonth() + 1);
+    
+    const formatDate = (date) => {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    };
+
+    const todayStr = formatDate(today);
+    const nextMonthStr = formatDate(nextMonth);
+
     setFormData({
       title: { en: '', bn: '' },
       content: { en: '', bn: '' },
       type: 'general',
       priority: 'medium',
       isUrgent: false,
-      publishDate: '',
-      expiryDate: '',
+      publishDate: todayStr,
+      expiryDate: nextMonthStr,
       attachment: null,
       isActive: true
     });
+    
+    setPublishDateInput(formatDateForDisplay(todayStr, currentLang));
+    setExpiryDateInput(formatDateForDisplay(nextMonthStr, currentLang));
     setEditingNotice(null);
   };
 
@@ -437,22 +564,33 @@ const NoticeManager = () => {
                     <label className="form-label">
                       {currentLang === 'bn' ? 'প্রকাশের তারিখ' : 'Publish Date'}
                     </label>
-                    <input
-                      type="date"
-                      value={formData.publishDate}
-                      onChange={(e) => setFormData({ ...formData, publishDate: e.target.value })}
-                      className="form-input"
+                    <DatePicker
+                      selected={formData.publishDate}
+                      onChange={(date) => handleDateChange(date, 'publishDate')}
+                      className="form-input w-full"
+                      dateFormat="Pp"
+                      showTimeSelect
+                      timeFormat="p"
+                      timeIntervals={15}
+                      locale={currentLang === 'bn' ? 'bn' : 'en'}
+                      placeholderText={currentLang === 'bn' ? 'তারিখ নির্বাচন করুন' : 'Select date'}
                     />
                   </div>
                   <div>
                     <label className="form-label">
                       {currentLang === 'bn' ? 'মেয়াদ শেষ' : 'Expiry Date'}
                     </label>
-                    <input
-                      type="date"
-                      value={formData.expiryDate}
-                      onChange={(e) => setFormData({ ...formData, expiryDate: e.target.value })}
-                      className="form-input"
+                    <DatePicker
+                      selected={formData.expiryDate}
+                      onChange={(date) => handleDateChange(date, 'expiryDate')}
+                      className="form-input w-full"
+                      dateFormat="Pp"
+                      showTimeSelect
+                      timeFormat="p"
+                      timeIntervals={15}
+                      minDate={formData.publishDate}
+                      locale={currentLang === 'bn' ? 'bn' : 'en'}
+                      placeholderText={currentLang === 'bn' ? 'মেয়াদ শেষের তারিখ' : 'Select expiry date'}
                     />
                   </div>
                 </div>

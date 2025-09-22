@@ -158,18 +158,31 @@ exports.createNotice = async (req, res) => {
       }
     }
 
+    // Generate slug from English title
+    const slug = title.en
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)/g, '');
+
     const notice = new Notice({
       title,
       content,
-      category,
+      excerpt: {
+        en: content.en.substring(0, 200),
+        bn: content.bn.substring(0, 200)
+      },
+      slug,
+      category: category || 'General',
       priority: priority || 'Medium',
-      targetAudience: targetAudience || ['All'],
-      specificClasses: specificClasses || [],
-      attachments,
+      targetAudience: Array.isArray(targetAudience) ? targetAudience : ['All'],
+      attachments: attachments || [],
       publishDate: publishDate || new Date(),
-      expiryDate,
+      expiryDate: expiryDate || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
       isPublished: isPublished !== undefined ? isPublished : true,
-      author: req.user.id
+      author: req.user.id,
+      status: 'published',
+      views: 0,
+      downloads: 0
     });
 
     await notice.save();
@@ -279,16 +292,34 @@ exports.updateNotice = async (req, res) => {
       }
     }
 
-    // Update fields
-    if (title) notice.title = title;
-    if (content) notice.content = content;
-    if (category) notice.category = category;
-    if (priority) notice.priority = priority;
-    if (targetAudience) notice.targetAudience = targetAudience;
-    if (specificClasses) notice.specificClasses = specificClasses;
-    if (publishDate) notice.publishDate = publishDate;
-    if (expiryDate) notice.expiryDate = expiryDate;
-    if (isPublished !== undefined) notice.isPublished = isPublished;
+    // Update notice fields
+    notice.title = title || notice.title;
+    notice.content = content || notice.content;
+    
+    // Update slug if title is changed
+    if (title && title.en) {
+      notice.slug = title.en
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/(^-|-$)/g, '');
+    }
+    
+    // Update excerpt if content is changed
+    if (content) {
+      notice.excerpt = {
+        en: content.en.substring(0, 200),
+        bn: content.bn.substring(0, 200)
+      };
+    }
+    
+    notice.category = category || notice.category || 'General';
+    notice.priority = priority || notice.priority || 'Medium';
+    notice.targetAudience = Array.isArray(targetAudience) ? targetAudience : (notice.targetAudience || ['All']);
+    notice.publishDate = publishDate || notice.publishDate || new Date();
+    notice.expiryDate = expiryDate || notice.expiryDate || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+    notice.isPublished = isPublished !== undefined ? isPublished : notice.isPublished;
+    notice.editor = req.user.id;
+    notice.updatedAt = new Date();
 
     notice.updatedBy = req.user.id;
     await notice.save();

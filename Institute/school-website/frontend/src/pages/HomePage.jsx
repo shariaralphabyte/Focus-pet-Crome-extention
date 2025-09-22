@@ -453,10 +453,10 @@ const HomePage = () => {
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
                         <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                          {notice.title}
+                          {notice.title?.[i18n.language] || notice.title?.en || notice.title}
                         </h3>
                         <p className="text-gray-600 dark:text-gray-400 text-sm line-clamp-2">
-                          {notice.content}
+                          {notice.content?.[i18n.language] || notice.content?.en || notice.content}
                         </p>
                         <div className="flex items-center mt-3 text-xs text-gray-500 dark:text-gray-400">
                           <span>{new Date(notice.publishDate).toLocaleDateString()}</span>

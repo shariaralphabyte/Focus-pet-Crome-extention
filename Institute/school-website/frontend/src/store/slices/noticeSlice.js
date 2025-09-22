@@ -41,10 +41,13 @@ export const fetchNoticeById = createAsyncThunk(
   async ({ id, language = 'en' }, { rejectWithValue }) => {
     try {
       const response = await api.get(`/notices/${id}?language=${language}`);
-      return response.data.notice;
+      console.log('API Response:', response.data); // Debug log
+      // Ensure we return the notice data in the expected format
+      return response.data.data || response.data; // Handle both response formats
     } catch (error) {
+      console.error('Error fetching notice:', error);
       return rejectWithValue(
-        error.response?.data?.message || 'Failed to fetch notice'
+        error.response?.data?.message || 'Failed to fetch notice. The notice may not exist or you may have insufficient permissions.'
       );
     }
   }
@@ -54,11 +57,61 @@ export const createNotice = createAsyncThunk(
   'notices/createNotice',
   async (noticeData, { rejectWithValue }) => {
     try {
-      const response = await api.post('/notices', noticeData);
-      return response.data.notice;
+      // Ensure noticeData is an object
+      if (!noticeData || typeof noticeData !== 'object') {
+        throw new Error('Invalid notice data');
+      }
+
+      // Helper function to safely get localized field
+      const getLocalizedField = (field, defaultValue = '') => {
+        if (!noticeData[field]) return { en: defaultValue, bn: defaultValue };
+        
+        if (typeof noticeData[field] === 'string') {
+          return { en: noticeData[field], bn: noticeData[field] };
+        }
+        
+        return {
+          en: noticeData[field]?.en || defaultValue,
+          bn: noticeData[field]?.bn || defaultValue
+        };
+      };
+
+      // Get title and content with fallbacks
+      const title = getLocalizedField('title', 'Untitled Notice');
+      const content = getLocalizedField('content', '');
+      
+      // Format the notice data to match the backend's expected format
+      const formattedData = {
+        title: {
+          en: title.en,
+          bn: title.bn
+        },
+        content: {
+          en: content.en,
+          bn: content.bn
+        },
+        excerpt: {
+          en: noticeData.excerpt?.en || noticeData.excerpt || content.en.substring(0, 200),
+          bn: noticeData.excerpt?.bn || noticeData.excerpt || content.bn.substring(0, 200)
+        },
+        category: noticeData.category || 'General',
+        priority: noticeData.priority || 'Medium',
+        targetAudience: Array.isArray(noticeData.targetAudience) 
+          ? noticeData.targetAudience 
+          : [noticeData.targetAudience || 'All'],
+        publishDate: noticeData.publishDate || new Date().toISOString(),
+        expiryDate: noticeData.expiryDate || null,
+        isPublished: noticeData.isPublished !== undefined ? noticeData.isPublished : true
+      };
+
+      console.log('Sending notice data:', formattedData); // Debug log
+      
+      const response = await api.post('/notices', formattedData);
+      return response.data.data || response.data; // Handle both response formats
     } catch (error) {
+      console.error('Error creating notice:', error.response?.data || error.message);
       return rejectWithValue(
-        error.response?.data?.message || 'Failed to create notice'
+        error.response?.data?.message || 'Failed to create notice. Please check the data and try again.'
       );
     }
   }
@@ -68,11 +121,62 @@ export const updateNotice = createAsyncThunk(
   'notices/updateNotice',
   async ({ id, noticeData }, { rejectWithValue }) => {
     try {
-      const response = await api.put(`/notices/${id}`, noticeData);
-      return response.data.notice;
+      // Ensure noticeData is an object
+      if (!noticeData || typeof noticeData !== 'object') {
+        throw new Error('Invalid notice data');
+      }
+
+      // Helper function to safely get localized field
+      const getLocalizedField = (field, defaultValue = '') => {
+        if (!noticeData[field]) return { en: defaultValue, bn: defaultValue };
+        
+        if (typeof noticeData[field] === 'string') {
+          return { en: noticeData[field], bn: noticeData[field] };
+        }
+        
+        return {
+          en: noticeData[field]?.en || defaultValue,
+          bn: noticeData[field]?.bn || defaultValue
+        };
+      };
+
+      // Get title and content with fallbacks
+      const title = getLocalizedField('title', 'Untitled Notice');
+      const content = getLocalizedField('content', '');
+      const excerpt = getLocalizedField('excerpt', '');
+      
+      // Format the notice data to match the backend's expected format
+      const formattedData = {
+        title: {
+          en: title.en,
+          bn: title.bn
+        },
+        content: {
+          en: content.en,
+          bn: content.bn
+        },
+        excerpt: {
+          en: excerpt.en || content.en.substring(0, 200),
+          bn: excerpt.bn || content.bn.substring(0, 200)
+        },
+        category: noticeData.category || 'General',
+        priority: noticeData.priority || 'Medium',
+        targetAudience: Array.isArray(noticeData.targetAudience) 
+          ? noticeData.targetAudience 
+          : [noticeData.targetAudience || 'All'],
+        publishDate: noticeData.publishDate || new Date().toISOString(),
+        expiryDate: noticeData.expiryDate || null,
+        isPublished: noticeData.isPublished !== undefined ? noticeData.isPublished : true
+      };
+
+      console.log('Updating notice with data:', formattedData); // Debug log
+      
+      const response = await api.put(`/notices/${id}`, formattedData);
+      return response.data.data || response.data; // Handle both response formats
     } catch (error) {
+      console.error('Error updating notice:', error.response?.data || error.message);
       return rejectWithValue(
-        error.response?.data?.message || 'Failed to update notice'
+        error.response?.data?.message || 'Failed to update notice. Please check the data and try again.'
       );
     }
   }
@@ -184,11 +288,11 @@ const noticeSlice = createSlice({
       })
       .addCase(fetchNotices.fulfilled, (state, action) => {
         state.loading = false;
-        state.notices = action.payload.notices;
+        state.notices = action.payload.data || [];
         state.pagination = {
-          currentPage: action.payload.currentPage,
-          totalPages: action.payload.totalPages,
-          total: action.payload.total,
+          currentPage: action.payload.page || 1,
+          totalPages: action.payload.pages || 1,
+          total: action.payload.total || 0,
           limit: state.pagination.limit,
         };
         state.error = null;
@@ -202,6 +306,7 @@ const noticeSlice = createSlice({
       .addCase(fetchNoticeById.pending, (state) => {
         state.loading = true;
         state.error = null;
+        state.currentNotice = null; // Clear current notice when starting a new fetch
       })
       .addCase(fetchNoticeById.fulfilled, (state, action) => {
         state.loading = false;
@@ -210,7 +315,9 @@ const noticeSlice = createSlice({
       })
       .addCase(fetchNoticeById.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload;
+        state.error = action.payload || 'Failed to load notice';
+        state.currentNotice = null; // Clear current notice on error
+        console.error('Error in fetchNoticeById:', action.payload); // Debug log
       })
       
       // Create notice
