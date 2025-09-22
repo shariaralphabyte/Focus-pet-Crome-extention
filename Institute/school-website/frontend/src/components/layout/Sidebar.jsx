@@ -31,15 +31,15 @@ const Sidebar = () => {
     if (user?.role === 'admin') {
       return [
         ...baseItems,
-        { name: t('dashboard.overview'), href: '/admin/overview', icon: FiBarChart2 },
-        { name: t('notices.notices'), href: '/admin/notices', icon: FiFileText },
-        { name: t('teachers.teachers'), href: '/admin/teachers', icon: FiUsers },
-        { name: t('students.students'), href: '/admin/students', icon: FiUsers },
-        { name: t('gallery.gallery'), href: '/admin/gallery', icon: FiImage },
-        { name: t('routines.routines'), href: '/admin/routines', icon: FiCalendar },
-        { name: t('results.results'), href: '/admin/results', icon: FiAward },
-        { name: t('syllabus.syllabus'), href: '/admin/syllabus', icon: FiBook },
-        { name: t('institution.profile'), href: '/admin/institution', icon: FiSettings },
+        { name: 'সংক্ষিপ্ত বিবরণ', href: '/admin/overview', icon: FiBarChart2 },
+        { name: 'নোটিশ', href: '/admin/notices', icon: FiFileText },
+        { name: 'শিক্ষকবৃন্দ', href: '/admin/teachers', icon: FiUsers },
+        { name: 'শিক্ষার্থীবৃন্দ', href: '/admin/students', icon: FiUsers },
+        { name: 'গ্যালারি', href: '/admin/gallery', icon: FiImage },
+        { name: 'ক্লাস রুটিন', href: '/admin/routines', icon: FiCalendar },
+        { name: 'ফলাফল', href: '/admin/results', icon: FiAward },
+        { name: 'পাঠ্যসূচি', href: '/admin/syllabus', icon: FiBook },
+        { name: 'প্রতিষ্ঠান পরিচিতি', href: '/admin/institution', icon: FiSettings },
       ];
     }
 
@@ -132,29 +132,29 @@ const Sidebar = () => {
       {user?.role === 'admin' && (
         <div className="p-4 border-t border-gray-200 dark:border-gray-700">
           <h4 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">
-            {t('dashboard.quickActions')}
+            দ্রুত কার্যক্রম
           </h4>
           <div className="space-y-1">
             <Link
-              to="/admin/notices/create"
+              to="/admin/notices"
               className="flex items-center space-x-2 px-3 py-2 text-xs text-gray-600 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
             >
               <FiEdit className="w-4 h-4" />
-              <span>{t('notices.createNotice')}</span>
+              <span>নোটিশ তৈরি করুন</span>
             </Link>
             <Link
-              to="/admin/teachers/add"
+              to="/admin/teachers"
               className="flex items-center space-x-2 px-3 py-2 text-xs text-gray-600 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
             >
               <FiUserPlus className="w-4 h-4" />
-              <span>{t('teachers.addTeacher')}</span>
+              <span>শিক্ষক যোগ করুন</span>
             </Link>
             <Link
-              to="/admin/gallery/upload"
+              to="/admin/gallery"
               className="flex items-center space-x-2 px-3 py-2 text-xs text-gray-600 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
             >
               <FiUpload className="w-4 h-4" />
-              <span>{t('gallery.uploadPhoto')}</span>
+              <span>ছবি আপলোড করুন</span>
             </Link>
           </div>
         </div>

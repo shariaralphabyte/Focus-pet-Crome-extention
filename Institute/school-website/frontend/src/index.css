@@ -33,7 +33,12 @@
   
   /* Bengali font for Bangla text */
   .font-bengali {
-    font-family: 'Noto Sans Bengali', sans-serif;
+    font-family: 'Tiro Bangla', 'Noto Sans Bengali', sans-serif;
+  }
+  
+  /* Apply Tiro Bangla to Bengali text elements */
+  [lang="bn"], .bn-text {
+    font-family: 'Tiro Bangla', 'Noto Sans Bengali', sans-serif;
   }
   
   /* Smooth scrolling */

@@ -8,7 +8,8 @@ module.exports = {
     extend: {
       fontFamily: {
         'inter': ['Inter', 'sans-serif'],
-        'bengali': ['Noto Sans Bengali', 'sans-serif'],
+        'bengali': ['Tiro Bangla', 'Noto Sans Bengali', 'sans-serif'],
+        'tiro-bangla': ['Tiro Bangla', 'serif'],
       },
       colors: {
         primary: {

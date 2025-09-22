@@ -107,12 +107,13 @@ const NoticeManager = () => {
     title: { en: '', bn: '' },
     content: { en: '', bn: '' },
     excerpt: { en: '', bn: '' },
-    category: 'General',
-    priority: 'Medium',
+    type: 'general',
+    priority: 'medium',
     targetAudience: ['All'],
     publishDate: new Date(),
     expiryDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
     attachment: null,
+    isUrgent: false,
     isPublished: true,
     isPinned: false,
     isActive: true
@@ -176,8 +177,8 @@ const NoticeManager = () => {
       type: formData.type,
       priority: formData.priority,
       isUrgent: formData.isUrgent,
-      publishDate: formData.publishDate.toISOString(),
-      expiryDate: formData.expiryDate.toISOString(),
+      publishDate: formData.publishDate instanceof Date ? formData.publishDate.toISOString() : new Date(formData.publishDate).toISOString(),
+      expiryDate: formData.expiryDate instanceof Date ? formData.expiryDate.toISOString() : new Date(formData.expiryDate).toISOString(),
       targetAudience: ['All'],
       isPublished: true,
       isPinned: false,
@@ -226,16 +227,6 @@ const NoticeManager = () => {
     const today = new Date();
     const nextMonth = new Date(today);
     nextMonth.setMonth(today.getMonth() + 1);
-    
-    const formatDate = (date) => {
-      const year = date.getFullYear();
-      const month = String(date.getMonth() + 1).padStart(2, '0');
-      const day = String(date.getDate()).padStart(2, '0');
-      return `${year}-${month}-${day}`;
-    };
-
-    const todayStr = formatDate(today);
-    const nextMonthStr = formatDate(nextMonth);
 
     setFormData({
       title: { en: '', bn: '' },
@@ -243,14 +234,14 @@ const NoticeManager = () => {
       type: 'general',
       priority: 'medium',
       isUrgent: false,
-      publishDate: todayStr,
-      expiryDate: nextMonthStr,
+      publishDate: today,
+      expiryDate: nextMonth,
       attachment: null,
       isActive: true
     });
     
-    setPublishDateInput(formatDateForDisplay(todayStr, currentLang));
-    setExpiryDateInput(formatDateForDisplay(nextMonthStr, currentLang));
+    setPublishDateInput('');
+    setExpiryDateInput('');
     setEditingNotice(null);
   };
 
@@ -262,8 +253,8 @@ const NoticeManager = () => {
       type: notice.type || 'general',
       priority: notice.priority || 'medium',
       isUrgent: notice.isUrgent || false,
-      publishDate: notice.publishDate ? notice.publishDate.split('T')[0] : '',
-      expiryDate: notice.expiryDate ? notice.expiryDate.split('T')[0] : '',
+      publishDate: notice.publishDate ? new Date(notice.publishDate) : new Date(),
+      expiryDate: notice.expiryDate ? new Date(notice.expiryDate) : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
       attachment: null,
       isActive: notice.isActive !== false
     });
