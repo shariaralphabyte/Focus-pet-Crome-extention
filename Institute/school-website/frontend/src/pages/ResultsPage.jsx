@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useDispatch, useSelector } from 'react-redux';
 import { motion } from 'framer-motion';
 import { Helmet } from 'react-helmet-async';
 import { 
@@ -12,12 +13,38 @@ import {
   FiUsers,
   FiCalendar
 } from 'react-icons/fi';
+import { fetchResults, setFilters } from '../store/slices/resultSlice';
+import { fetchActiveClasses } from '../store/slices/classSlice';
+import LoadingSpinner from '../components/common/LoadingSpinner';
 
 const ResultsPage = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const dispatch = useDispatch();
+  const currentLang = i18n.language;
+
+  const { results, loading, error, filters } = useSelector(state => state.results);
+  const { activeClasses } = useSelector(state => state.classes);
+
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedExam, setSelectedExam] = useState('SSC 2024');
-  const [selectedClass, setSelectedClass] = useState('Class 10');
+  const [selectedExam, setSelectedExam] = useState('');
+  const [selectedClass, setSelectedClass] = useState('');
+  const [selectedSection, setSelectedSection] = useState('');
+
+  useEffect(() => {
+    dispatch(fetchActiveClasses());
+    dispatch(fetchResults(filters));
+  }, [dispatch, filters]);
+
+  const handleSearch = () => {
+    const searchParams = {
+      ...filters,
+      class: selectedClass,
+      section: selectedSection,
+      examType: selectedExam,
+      search: searchTerm
+    };
+    dispatch(fetchResults(searchParams));
+  };
 
   // Mock results data
   const examResults = {

@@ -13,6 +13,7 @@ import eventReducer from './slices/eventSlice';
 import contentReducer from './slices/contentSlice';
 import themeReducer from './slices/themeSlice';
 import uiReducer from './slices/uiSlice';
+import classReducer from './slices/classSlice';
 
 export const store = configureStore({
   reducer: {
@@ -30,6 +31,7 @@ export const store = configureStore({
     content: contentReducer,
     theme: themeReducer,
     ui: uiReducer,
+    classes: classReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

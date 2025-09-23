@@ -15,46 +15,48 @@ exports.getTeachers = async (req, res) => {
     // Build query
     let query = { isActive: true };
     
-    // Add search functionality (bilingual)
-    if (req.query.search) {
-      query.$or = [
-        { 'name.en': { $regex: req.query.search, $options: 'i' } },
-        { 'name.bn': { $regex: req.query.search, $options: 'i' } },
-        { 'designation.en': { $regex: req.query.search, $options: 'i' } },
-        { 'designation.bn': { $regex: req.query.search, $options: 'i' } },
-        { 'department.en': { $regex: req.query.search, $options: 'i' } },
-        { 'department.bn': { $regex: req.query.search, $options: 'i' } }
-      ];
-    }
-
+    // Add search functionality (will be handled after population)
+    const searchTerm = req.query.search;
+    
     // Add filters
     if (req.query.department) {
-      query.$or = [
-        { 'department.en': req.query.department },
-        { 'department.bn': req.query.department }
-      ];
+      query.department = req.query.department;
     }
     if (req.query.designation) {
-      query.$or = [
-        { 'designation.en': req.query.designation },
-        { 'designation.bn': req.query.designation }
-      ];
+      query['designation.en'] = req.query.designation;
     }
     if (req.query.status) {
       query.status = req.query.status;
     }
 
-    const teachers = await Teacher.find(query)
+    let teachers = await Teacher.find(query)
       .populate('user', 'name email phone avatar')
-      .sort({ createdAt: -1 })
-      .skip(skip)
-      .limit(limit);
+      .sort({ createdAt: -1 });
 
-    const total = await Teacher.countDocuments(query);
+    // Apply search filter after population (since we need to search user.name)
+    if (searchTerm) {
+      teachers = teachers.filter(teacher => {
+        const userName = teacher.user?.name?.toLowerCase() || '';
+        const designationEn = teacher.designation?.en?.toLowerCase() || '';
+        const designationBn = teacher.designation?.bn?.toLowerCase() || '';
+        const department = teacher.department?.toLowerCase() || '';
+        const search = searchTerm.toLowerCase();
+        
+        return userName.includes(search) || 
+               designationEn.includes(search) || 
+               designationBn.includes(search) || 
+               department.includes(search);
+      });
+    }
+
+    const total = teachers.length;
+    
+    // Apply pagination after filtering
+    const paginatedTeachers = teachers.slice(skip, skip + limit);
 
     res.json({
       success: true,
-      data: teachers,
+      data: paginatedTeachers,
       pagination: {
         page,
         limit,
@@ -113,33 +115,62 @@ exports.createTeacher = async (req, res) => {
       });
     }
 
-    // Handle photo upload
+    // Parse JSON fields from FormData
+    const userData = typeof req.body.user === 'string' ? JSON.parse(req.body.user) : req.body.user;
+    const designation = typeof req.body.designation === 'string' ? JSON.parse(req.body.designation) : req.body.designation;
+    const personalInfo = typeof req.body.personalInfo === 'string' ? JSON.parse(req.body.personalInfo) : req.body.personalInfo;
+    const contactInfo = typeof req.body.contactInfo === 'string' ? JSON.parse(req.body.contactInfo) : req.body.contactInfo;
+
+    // Handle photo upload (local storage for development)
     let photoData = {};
     if (req.file) {
-      try {
-        const result = await cloudinary.uploader.upload(req.file.path, {
-          folder: 'teachers',
-          transformation: [
-            { width: 400, height: 400, crop: 'fill' },
-            { quality: 'auto' }
-          ]
-        });
-        
-        photoData = {
-          url: result.secure_url,
-          publicId: result.public_id
-        };
-      } catch (uploadError) {
-        console.error('Photo upload error:', uploadError);
-      }
+      photoData = {
+        url: `/uploads/images/${req.file.filename}`,
+        publicId: req.file.filename
+      };
+    }
+
+    // Create or find user
+    let user = await User.findOne({ email: userData.email });
+    if (!user) {
+      const bcrypt = require('bcryptjs');
+      user = await User.create({
+        name: {
+          en: userData.name?.en || userData.name,
+          bn: userData.name?.bn || ''
+        },
+        email: userData.email,
+        phone: userData.phone,
+        password: await bcrypt.hash('teacher123', 10), // Default password
+        role: 'teacher',
+        isActive: true
+      });
+    } else {
+      // Update existing user name if provided
+      await User.findByIdAndUpdate(user._id, {
+        name: {
+          en: userData.name?.en || userData.name,
+          bn: userData.name?.bn || user.name?.bn || ''
+        },
+        phone: userData.phone
+      });
     }
 
     const teacherData = {
-      ...req.body,
+      user: user._id,
+      teacherId: req.body.teacherId,
+      designation: designation,
+      department: req.body.department,
+      joiningDate: req.body.joiningDate,
+      employeeType: req.body.employeeType || 'Permanent',
+      mpoStatus: req.body.mpoStatus || 'Non-MPO',
       personalInfo: {
-        ...req.body.personalInfo,
+        ...personalInfo,
         photo: photoData
-      }
+      },
+      contactInfo: contactInfo,
+      status: req.body.status || 'Active',
+      isActive: req.body.isActive !== false
     };
 
     const teacher = await Teacher.create(teacherData);
@@ -181,38 +212,57 @@ exports.updateTeacher = async (req, res) => {
       });
     }
 
-    // Handle photo upload
-    let photoData = teacher.personalInfo.photo;
-    if (req.file) {
-      try {
-        // Delete old photo if exists
-        if (teacher.personalInfo.photo && teacher.personalInfo.photo.publicId) {
-          await cloudinary.uploader.destroy(teacher.personalInfo.photo.publicId);
-        }
+    // Parse JSON fields from FormData
+    const userData = typeof req.body.user === 'string' ? JSON.parse(req.body.user) : req.body.user;
+    const designation = typeof req.body.designation === 'string' ? JSON.parse(req.body.designation) : req.body.designation;
+    const personalInfo = typeof req.body.personalInfo === 'string' ? JSON.parse(req.body.personalInfo) : req.body.personalInfo;
+    const contactInfo = typeof req.body.contactInfo === 'string' ? JSON.parse(req.body.contactInfo) : req.body.contactInfo;
 
-        const result = await cloudinary.uploader.upload(req.file.path, {
-          folder: 'teachers',
-          transformation: [
-            { width: 400, height: 400, crop: 'fill' },
-            { quality: 'auto' }
-          ]
-        });
-        
-        photoData = {
-          url: result.secure_url,
-          publicId: result.public_id
-        };
-      } catch (uploadError) {
-        console.error('Photo upload error:', uploadError);
+    // Handle photo upload (local storage for development)
+    let photoData = teacher.personalInfo?.photo || {};
+    if (req.file) {
+      // Delete old photo if exists
+      if (teacher.personalInfo?.photo && teacher.personalInfo.photo.publicId) {
+        const fs = require('fs');
+        const path = require('path');
+        const oldPhotoPath = path.join('uploads/images', teacher.personalInfo.photo.publicId);
+        if (fs.existsSync(oldPhotoPath)) {
+          fs.unlinkSync(oldPhotoPath);
+        }
       }
+
+      photoData = {
+        url: `/uploads/images/${req.file.filename}`,
+        publicId: req.file.filename
+      };
+    }
+
+    // Update user if provided
+    if (userData && teacher.user) {
+      await User.findByIdAndUpdate(teacher.user, {
+        name: {
+          en: userData.name?.en || userData.name,
+          bn: userData.name?.bn || ''
+        },
+        email: userData.email,
+        phone: userData.phone
+      });
     }
 
     const updateData = {
-      ...req.body,
+      teacherId: req.body.teacherId,
+      designation: designation,
+      department: req.body.department,
+      joiningDate: req.body.joiningDate,
+      employeeType: req.body.employeeType,
+      mpoStatus: req.body.mpoStatus,
       personalInfo: {
-        ...req.body.personalInfo,
+        ...personalInfo,
         photo: photoData
-      }
+      },
+      contactInfo: contactInfo,
+      status: req.body.status,
+      isActive: req.body.isActive !== false
     };
 
     teacher = await Teacher.findByIdAndUpdate(

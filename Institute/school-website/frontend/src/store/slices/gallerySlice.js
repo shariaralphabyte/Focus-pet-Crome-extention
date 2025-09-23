@@ -57,6 +57,9 @@ export const fetchGallery = createAsyncThunk(
   'gallery/fetchGallery',
   async (id, { rejectWithValue }) => {
     try {
+      if (!id) {
+        return rejectWithValue('Gallery ID is required');
+      }
       const response = await api.get(`/gallery/${id}`);
       return response.data;
     } catch (error) {

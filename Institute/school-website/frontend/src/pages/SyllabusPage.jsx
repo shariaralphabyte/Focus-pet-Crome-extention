@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useDispatch, useSelector } from 'react-redux';
 import { motion } from 'framer-motion';
 import { Helmet } from 'react-helmet-async';
 import { 
@@ -12,12 +13,38 @@ import {
   FiLayers,
   FiSearch
 } from 'react-icons/fi';
+import { fetchSyllabus, setFilters } from '../store/slices/syllabusSlice';
+import { fetchActiveClasses } from '../store/slices/classSlice';
+import LoadingSpinner from '../components/common/LoadingSpinner';
 
 const SyllabusPage = () => {
-  const { t } = useTranslation();
-  const [selectedClass, setSelectedClass] = useState('Class 6');
-  const [selectedSubject, setSelectedSubject] = useState('All Subjects');
+  const { t, i18n } = useTranslation();
+  const dispatch = useDispatch();
+  const currentLang = i18n.language;
+
+  const { syllabus, loading, error, filters } = useSelector(state => state.syllabus);
+  const { activeClasses } = useSelector(state => state.classes);
+
+  const [selectedClass, setSelectedClass] = useState('');
+  const [selectedSubject, setSelectedSubject] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
+  const [academicYear] = useState(new Date().getFullYear().toString());
+
+  useEffect(() => {
+    dispatch(fetchActiveClasses());
+    dispatch(fetchSyllabus(filters));
+  }, [dispatch, filters]);
+
+  const handleSearch = () => {
+    const searchParams = {
+      ...filters,
+      class: selectedClass,
+      subject: selectedSubject,
+      academicYear: academicYear,
+      search: searchTerm
+    };
+    dispatch(fetchSyllabus(searchParams));
+  };
 
   // Mock syllabus data
   const syllabusData = {

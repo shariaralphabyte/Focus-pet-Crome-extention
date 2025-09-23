@@ -21,6 +21,7 @@ const syllabusRoutes = require('./routes/syllabus');
 const committeeRoutes = require('./routes/committee');
 const eventRoutes = require('./routes/events');
 const contentRoutes = require('./routes/content');
+const classRoutes = require('./routes/classRoutes');
 
 // Import middleware
 const { errorHandler } = require('./middleware/errorHandler');
@@ -134,6 +135,7 @@ app.use('/api/syllabus', syllabusRoutes);
 app.use('/api/management-committee', committeeRoutes);
 app.use('/api/events', eventRoutes);
 app.use('/api/content', contentRoutes);
+app.use('/api/classes', classRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {

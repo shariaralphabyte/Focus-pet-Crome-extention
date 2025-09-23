@@ -36,6 +36,11 @@ import EventManager from '../../components/dashboard/EventManager';
 import ContentManager from '../../components/dashboard/ContentManager';
 import GalleryManager from '../../components/dashboard/GalleryManager';
 import NoticeManager from '../../components/dashboard/NoticeManager';
+import RoutinesManager from '../../components/dashboard/RoutinesManager';
+import ResultsManager from '../../components/dashboard/ResultsManager';
+import SyllabusManager from '../../components/dashboard/SyllabusManager';
+import ClassManager from '../../components/dashboard/ClassManager';
+import TeachersManager from '../../components/dashboard/TeachersManager';
 
 const AdminDashboard = () => {
   const { t } = useTranslation();
@@ -144,6 +149,46 @@ const AdminDashboard = () => {
       count: null,
       path: '/admin/institution',
       color: 'text-gray-600 dark:text-gray-400'
+    },
+    { 
+      title: 'Routines Management', 
+      description: 'Manage class and exam routines', 
+      icon: FiCalendar, 
+      count: null,
+      path: '/admin/routines',
+      color: 'text-indigo-600 dark:text-indigo-400'
+    },
+    { 
+      title: 'Results Management', 
+      description: 'Manage exam results and grades', 
+      icon: FiAward, 
+      count: null,
+      path: '/admin/results',
+      color: 'text-pink-600 dark:text-pink-400'
+    },
+    { 
+      title: 'Syllabus Management', 
+      description: 'Manage course syllabus and curriculum', 
+      icon: FiBook, 
+      count: null,
+      path: '/admin/syllabus',
+      color: 'text-teal-600 dark:text-teal-400'
+    },
+    { 
+      title: 'Class Management', 
+      description: 'Manage classes, sections, and subjects', 
+      icon: FiUsers, 
+      count: null,
+      path: '/admin/classes',
+      color: 'text-cyan-600 dark:text-cyan-400'
+    },
+    { 
+      title: 'Teachers Management', 
+      description: 'Manage teachers and staff information', 
+      icon: FiUserPlus, 
+      count: null,
+      path: '/admin/teachers',
+      color: 'text-emerald-600 dark:text-emerald-400'
     }
   ];
 
@@ -304,12 +349,15 @@ const AdminDashboard = () => {
           <Route path="/committee" element={<ManagementCommitteeManager />} />
           <Route path="/institution" element={<InstitutionSettingsManager />} />
           
+          {/* New Management Routes */}
+          <Route path="/routines" element={<RoutinesManager />} />
+          <Route path="/results" element={<ResultsManager />} />
+          <Route path="/syllabus" element={<SyllabusManager />} />
+          <Route path="/classes" element={<ClassManager />} />
+          <Route path="/teachers" element={<TeachersManager />} />
+          
           {/* Placeholder routes for other sections */}
-          <Route path="/teachers" element={<div className="p-6 bg-white dark:bg-gray-800 rounded-lg"><h2 className="text-2xl font-bold mb-4">Teacher Management</h2><p>Teacher management interface coming soon...</p></div>} />
           <Route path="/students" element={<div className="p-6 bg-white dark:bg-gray-800 rounded-lg"><h2 className="text-2xl font-bold mb-4">Student Management</h2><p>Student management interface coming soon...</p></div>} />
-          <Route path="/routines" element={<div className="p-6 bg-white dark:bg-gray-800 rounded-lg"><h2 className="text-2xl font-bold mb-4">Class Routines</h2><p>Routine management interface coming soon...</p></div>} />
-          <Route path="/results" element={<div className="p-6 bg-white dark:bg-gray-800 rounded-lg"><h2 className="text-2xl font-bold mb-4">Results Management</h2><p>Results management interface coming soon...</p></div>} />
-          <Route path="/syllabus" element={<div className="p-6 bg-white dark:bg-gray-800 rounded-lg"><h2 className="text-2xl font-bold mb-4">Syllabus Management</h2><p>Syllabus management interface coming soon...</p></div>} />
         </Routes>
       </div>
     </div>

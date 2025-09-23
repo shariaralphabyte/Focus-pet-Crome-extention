@@ -52,36 +52,23 @@ const teacherSchema = new mongoose.Schema({
     ]
   },
   subjects: [{
-    type: String,
-    required: true
+    type: String
   }],
   classes: [{
     class: {
-      type: String,
-      required: true
+      type: String
     },
     section: {
-      type: String,
-      required: true
+      type: String
     },
     subject: {
-      type: String,
-      required: true
+      type: String
     }
   }],
   qualifications: [{
-    degree: {
-      type: String,
-      required: true
-    },
-    institution: {
-      type: String,
-      required: true
-    },
-    year: {
-      type: Number,
-      required: true
-    },
+    degree: String,
+    institution: String,
+    year: Number,
     result: String,
     certificate: {
       public_id: String,
@@ -341,22 +328,14 @@ teacherSchema.virtual('yearsOfService').get(function() {
   return 0;
 });
 
-// Pre-save middleware to generate teacher ID
-teacherSchema.pre('save', async function(next) {
+// Ensure teacherId exists before validation
+teacherSchema.pre('validate', async function(next) {
   if (!this.teacherId) {
     const year = new Date().getFullYear().toString().slice(-2);
     const count = await this.constructor.countDocuments();
     this.teacherId = `TCH${year}${String(count + 1).padStart(4, '0')}`;
   }
-  
-  // Calculate total salary
-  if (this.salary) {
-    this.salary.total = (this.salary.basic || 0) + 
-                       (this.salary.houseRent || 0) + 
-                       (this.salary.medical || 0) + 
-                       (this.salary.transport || 0);
-  }
-  
+
   next();
 });
 

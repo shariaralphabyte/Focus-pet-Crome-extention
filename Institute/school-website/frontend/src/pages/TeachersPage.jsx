@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { Helmet } from 'react-helmet-async';
@@ -15,70 +14,151 @@ import {
   FiUser
 } from 'react-icons/fi';
 
-// Redux actions
-import { 
-  fetchTeachers, 
-  fetchTeacherStats, 
-  fetchDepartments, 
-  fetchDesignations,
-  setFilters, 
-  clearFilters 
-} from '../store/slices/teacherSlice';
-
 // Components
 import LoadingSpinner from '../components/common/LoadingSpinner';
 
 const TeachersPage = () => {
-  const dispatch = useDispatch();
   const { t, i18n } = useTranslation();
-  
-  const { 
-    teachers, 
-    stats, 
-    departments, 
-    designations, 
-    loading, 
-    statsLoading, 
-    error, 
-    filters, 
-    pagination 
-  } = useSelector(state => state.teachers);
-  
-  const [searchTerm, setSearchTerm] = useState(filters.search || '');
-  const [showFilters, setShowFilters] = useState(false);
   const currentLang = i18n.language;
+  // Safely convert bilingual objects or values to displayable strings
+  const textOf = (v) => {
+    if (v === null || v === undefined) return '';
+    if (typeof v === 'object') {
+      return v[currentLang] || v.en || v.bn || '';
+    }
+    return v;
+  };
+  
+  const [teachers, setTeachers] = useState([]);
+  const [departments, setDepartments] = useState([]);
+  const [designations, setDesignations] = useState([]);
+  const [stats, setStats] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [statsLoading, setStatsLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedDepartment, setSelectedDepartment] = useState('');
+  const [selectedDesignation, setSelectedDesignation] = useState('');
+  const [showFilters, setShowFilters] = useState(false);
 
-  // Fetch teachers data on component mount and when filters change
+  // Create filters object for compatibility
+  const filters = {
+    department: selectedDepartment,
+    designation: selectedDesignation
+  };
+
+  // Fetch teachers data
+  const fetchTeachersData = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const params = new URLSearchParams();
+      if (searchTerm) params.append('search', searchTerm);
+      if (selectedDepartment) params.append('department', selectedDepartment);
+      if (selectedDesignation) params.append('designation', selectedDesignation);
+      
+      const response = await fetch(`http://localhost:5001/api/teachers?${params.toString()}`);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        setTeachers(data.data);
+      } else {
+        setError(data.message || 'Failed to fetch teachers');
+      }
+    } catch (err) {
+      setError('Failed to fetch teachers');
+      console.error('Error fetching teachers:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Fetch departments
+  const fetchDepartmentsData = async () => {
+    try {
+      const response = await fetch('http://localhost:5001/api/teachers/departments');
+      const data = await response.json();
+      
+      if (data.success) {
+        setDepartments(data.data);
+      }
+    } catch (err) {
+      console.error('Error fetching departments:', err);
+    }
+  };
+
+  // Fetch designations
+  const fetchDesignationsData = async () => {
+    try {
+      const response = await fetch('http://localhost:5001/api/teachers/designations');
+      const data = await response.json();
+      
+      if (data.success) {
+        setDesignations(data.data);
+      }
+    } catch (err) {
+      console.error('Error fetching designations:', err);
+    }
+  };
+
+  // Fetch stats
+  const fetchStatsData = async () => {
+    setStatsLoading(true);
+    try {
+      const response = await fetch('http://localhost:5001/api/teachers/stats');
+      const data = await response.json();
+      
+      if (data.success) {
+        setStats(data.data);
+      }
+    } catch (err) {
+      console.error('Error fetching stats:', err);
+    } finally {
+      setStatsLoading(false);
+    }
+  };
+
+  // Fetch data on component mount and when filters change
   useEffect(() => {
-    const params = {
-      page: pagination.page,
-      limit: pagination.limit,
-      search: searchTerm,
-      ...filters
-    };
-    dispatch(fetchTeachers(params));
-  }, [dispatch, searchTerm, filters, pagination.page]);
+    fetchTeachersData();
+  }, [searchTerm, selectedDepartment, selectedDesignation]);
 
-  // Fetch additional data
+  // Fetch initial data
   useEffect(() => {
-    dispatch(fetchTeacherStats());
-    dispatch(fetchDepartments());
-    dispatch(fetchDesignations());
-  }, [dispatch]);
+    fetchDepartmentsData();
+    fetchDesignationsData();
+    fetchStatsData();
+  }, []);
 
+  // Handle search
   const handleSearch = (e) => {
     e.preventDefault();
-    // Search is handled by useEffect
+    fetchTeachersData();
   };
 
-  const handleFilterChange = (key, value) => {
-    dispatch(setFilters({ [key]: value }));
+  // Handle filter changes
+  const handleFilterChange = (filterName, value) => {
+    if (filterName === 'department') {
+      setSelectedDepartment(value);
+    } else if (filterName === 'designation') {
+      setSelectedDesignation(value);
+    }
   };
 
-  const clearAllFilters = () => {
+  // Clear all filters
+  const handleClearFilters = () => {
     setSearchTerm('');
-    dispatch(clearFilters());
+    setSelectedDepartment('');
+    setSelectedDesignation('');
   };
+
+  // Alternative name for compatibility
+  const clearAllFilters = handleClearFilters;
 
   const getDesignationColor = (designation) => {
     // Handle both bilingual object and string designation
@@ -171,9 +251,14 @@ const TeachersPage = () => {
                     className="form-input"
                   >
                     <option value="">All Departments</option>
-                    {departments.map(dept => (
-                      <option key={dept} value={dept}>{dept}</option>
-                    ))}
+                    {departments.map((dept) => {
+                      const label = typeof dept === 'object' ? (dept[currentLang] || dept.en || dept.bn || '') : dept;
+                      const value = typeof dept === 'object' ? (dept.en || dept.bn || '') : dept;
+                      const key = value || label || JSON.stringify(dept);
+                      return (
+                        <option key={key} value={value}>{label}</option>
+                      );
+                    })}
                   </select>
                 </div>
                 
@@ -185,9 +270,14 @@ const TeachersPage = () => {
                     className="form-input"
                   >
                     <option value="">All Designations</option>
-                    {designations.map(designation => (
-                      <option key={designation} value={designation}>{designation}</option>
-                    ))}
+                    {designations.map((designation) => {
+                      const label = typeof designation === 'object' ? (designation[currentLang] || designation.en || designation.bn || '') : designation;
+                      const value = typeof designation === 'object' ? (designation.en || designation.bn || '') : designation;
+                      const key = value || label || JSON.stringify(designation);
+                      return (
+                        <option key={key} value={value}>{label}</option>
+                      );
+                    })}
                   </select>
                 </div>
 
@@ -234,7 +324,7 @@ const TeachersPage = () => {
                 {teacher.personalInfo?.photo?.url ? (
                   <img 
                     src={teacher.personalInfo.photo.url} 
-                    alt={teacher.name?.[currentLang] || teacher.name?.en}
+                    alt={textOf(teacher.user?.name)}
                     className="w-full h-full object-cover"
                   />
                 ) : (
@@ -246,7 +336,7 @@ const TeachersPage = () => {
                 )}
                 <div className="absolute top-4 right-4">
                   <span className={`badge ${getDesignationColor(teacher.designation)}`}>
-                    {teacher.designation?.[currentLang] || teacher.designation?.en}
+                    {textOf(teacher.designation)}
                   </span>
                 </div>
               </div>
@@ -254,13 +344,13 @@ const TeachersPage = () => {
               {/* Teacher Info */}
               <div className="p-6">
                 <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
-                  {teacher.name?.[currentLang] || teacher.name?.en}
+                  {textOf(teacher.user?.name)}
                 </h3>
                 
                 <div className="flex items-center text-primary-600 dark:text-primary-400 mb-3">
                   <FiBook className="w-4 h-4 mr-2" />
                   <span className="text-sm font-medium">
-                    {teacher.department?.[currentLang] || teacher.department?.en}
+                    {textOf(teacher.department)}
                   </span>
                 </div>
 
@@ -272,7 +362,7 @@ const TeachersPage = () => {
                   <div className="flex flex-wrap gap-1">
                     {teacher.subjects?.slice(0, 2).map((subject, idx) => (
                       <span key={idx} className="badge badge-primary text-xs">
-                        {subject?.[currentLang] || subject?.en || subject}
+                        {textOf(subject)}
                       </span>
                     ))}
                     {teacher.subjects?.length > 2 && (
@@ -292,9 +382,7 @@ const TeachersPage = () => {
                   <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
                     <FiAward className="w-4 h-4 mr-2" />
                     <span>
-                      {teacher.qualifications?.[0]?.degree?.[currentLang] || 
-                       teacher.qualifications?.[0]?.degree?.en || 
-                       teacher.qualifications?.[0]?.degree}
+                      {textOf(teacher.qualifications?.[0]?.degree)}
                     </span>
                   </div>
                   <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
